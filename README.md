@@ -8,7 +8,8 @@ index.html              the page
 styles.css              all styles
 assets/mark.svg         the mark, traced from the source PNG (used as a CSS mask,
                         so it takes the surrounding text colour)
-assets/favicon.svg      dark rounded-square icon
+assets/favicon.svg      ink mark on paper; favicon.png / apple-touch-icon.png /
+                        icon-512.png are rasterized from it
 assets/og.png           1200x630 social card
 assets/hedgerouter-lockup.png   original supplied logo lockup (mark + wordmark)
 tools/png-to-svg.mjs    PNG -> rectangle-decomposed SVG tracer (no deps)
@@ -58,6 +59,31 @@ python3 -m http.server 4321 &
   --screenshot=assets/og.png --virtual-time-budget=6000 \
   http://localhost:4321/tools/og-template.html
 ```
+
+## Design rules
+
+The page is styled as a risk memo, not a landing page. The principle: **nothing
+here is decoration — every rule, number and label carries information.** These
+are deliberate constraints, so don't relax them by accident:
+
+- **Palette is six values**, all in `:root`: paper, paper-2, ink, ink-2, rule,
+  signal. `--signal` is for interactive things only; it is not an accent to
+  sprinkle. No third colour, no gradients, no shadows anywhere.
+- **Two type roles.** IBM Plex Sans for everything read as language; IBM Plex
+  Mono only inside the CLI block and for figures. Mono is never a label font.
+- **No cards.** Structure comes from hairline rules and real tables. `border-radius`
+  exists on buttons (2px) and nowhere else.
+- **Tables where content is tabular** — instruments, status, the privacy
+  allowlist. Below 620px they restack, and the four-column table carries its own
+  column labels via `data-label`.
+- **Numbered markers only for real sequences.** The pipeline is numbered because
+  it is one; the four exposure facts are simultaneous, so they are a ruled
+  definition list instead.
+- **No motion.** No scroll reveals, no hover transitions.
+- Avoid the generic-AI-page tells this was rewritten to remove: eyebrow pills with
+  status dots, one word coloured inside a headline, `A · B · C` middle-dot meta
+  strings, spaced em-dash labels, tracked ALL-CAPS mono headings, and uniform
+  radius plus soft shadow on every block.
 
 ## Copy
 
