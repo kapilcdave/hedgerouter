@@ -1,0 +1,322 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Hedgerouter — the hedging layer for enterprise AI</title>
+<meta name="description" content="Compute and token prices move; your AI budget is written as if they don't. Hedgerouter turns the metadata your gateway already emits into a dollar exposure ledger, then reports how much of that cost line each available instrument actually tracks." />
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml" />
+<link rel="icon" href="/assets/favicon.png" sizes="32x32" type="image/png" />
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
+<meta name="theme-color" content="#08090b" />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://hedgerouter.vercel.app/" />
+<meta property="og:site_name" content="Hedgerouter" />
+<meta property="og:title" content="Hedgerouter — the hedging layer for enterprise AI" />
+<meta property="og:description" content="Compute and token prices move. Your AI budget is written as if they don't. Measure the exposure in dollars, then decide what can actually be capped." />
+<meta property="og:image" content="https://hedgerouter.vercel.app/assets/og.png" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta name="twitter:card" content="summary_large_image" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+
+<div class="grain" aria-hidden="true"></div>
+
+<header class="nav">
+  <a class="brand" href="/">
+    <span class="mark brand-mark" aria-hidden="true"></span>
+    <span class="brand-word">Hedgerouter</span>
+  </a>
+  <nav class="nav-links">
+    <a href="#exposure">The exposure</a>
+    <a href="#pipeline">How it works</a>
+    <a href="#instruments">Instruments</a>
+    <a href="#status">Status</a>
+    <a class="nav-cta" href="https://github.com/kapilcdave/hedge-router">GitHub</a>
+  </nav>
+</header>
+
+<main>
+
+  <section class="hero">
+    <div class="lockup">
+      <span class="mark lockup-mark" aria-hidden="true"></span>
+      <p class="lockup-word">Hedgerouter</p>
+    </div>
+
+    <p class="eyebrow"><span class="dot"></span> The hedging layer for enterprise AI</p>
+
+    <h1>Your AI budget floats on<br /><span class="hl">a market you don't control.</span></h1>
+
+    <p class="lede">
+      Hedgerouter reads the metadata your AI gateway already emits and produces a dollar
+      exposure ledger: what you spend, on which models and providers, and how much of that
+      spend moves with compute prices rather than with your own usage. Then it prices the
+      instruments that could cap it, and reports how much of your real cost line each one
+      tracks.
+    </p>
+
+    <div class="cta-row">
+      <a class="btn btn-primary" href="https://github.com/kapilcdave/hedge-router">Measure your exposure</a>
+      <a class="btn btn-ghost" href="#pipeline">How it works</a>
+    </div>
+
+    <p class="hero-note">Self-hosted · metadata-only · Node 20+ · zero runtime dependencies · MIT</p>
+
+    <div class="hero-card">
+      <div class="term">
+        <div class="term-bar"><span></span><span></span><span></span><p>hedge-router</p></div>
+<pre><code><span class="c-dim">$</span> hedge-router ingest <span class="c-flag">--format</span> weave <span class="c-flag">--input</span> decisions.ndjson
+  <span class="c-ok">ok</span>  12,904 requests · 0 prompts · 0 identities stored
+
+<span class="c-dim">$</span> hedge-router report
+  spend <span class="c-num">$18,420</span>/mo · <span class="c-num">1.24B</span> tokens · 6 models · 3 providers
+  <span class="c-num">81%</span> of spend sits in 2 models
+
+<span class="c-dim">$</span> hedge-router basis <span class="c-flag">--index</span> h100-spot
+  <span class="c-warn">0.62</span>  of this cost line tracks the index · <span class="c-dim">reported, not assumed</span>
+</code></pre>
+      </div>
+    </div>
+  </section>
+
+  <section class="strip">
+    <div class="strip-item"><b>Self-hosted</b><span>runs inside your infra</span></div>
+    <div class="strip-item"><b>Metadata-only</b><span>no prompts, no identities</span></div>
+    <div class="strip-item"><b>Gateway-neutral</b><span>Weave · Agentgateway · OTLP</span></div>
+    <div class="strip-item"><b>Out of the request path</b><span>reads logs, serves nothing</span></div>
+  </section>
+
+  <section id="exposure" class="section">
+    <h2 class="sec-title">Compute is a commodity. Your budget treats it like a subscription.</h2>
+    <p class="sec-sub">
+      Companies shipping AI have taken on a commodity position nobody priced. Four things are
+      true at the same time, and they push the same direction.
+    </p>
+
+    <ol class="pipe pipe-two">
+      <li>
+        <span class="pipe-n">01</span>
+        <h3>GPU-hours have a spot price</h3>
+        <p>Rented accelerator capacity reprices week to week and public indices already quote it. If you buy on demand, you hold that price risk with no cap and no forward.</p>
+      </li>
+      <li>
+        <span class="pipe-n">02</span>
+        <h3>Token prices are a floating rate</h3>
+        <p>Providers cut list prices, raise them, deprecate models, and move your mix underneath you. A rate card is the price you pay this quarter, not a fixed cost.</p>
+      </li>
+      <li>
+        <span class="pipe-n">03</span>
+        <h3>Usage grows with the product</h3>
+        <p>Every agent you ship raises consumption. Volume growth and price moves compound, and the usual remedy is to make the product worse.</p>
+      </li>
+      <li>
+        <span class="pipe-n">04</span>
+        <h3>Nobody holds the position in dollars</h3>
+        <p>Finance sees one invoice a month. Engineering sees tokens per request. Neither is an exposure, and you cannot bound what nobody has written down as a dollar position.</p>
+      </li>
+    </ol>
+
+    <p class="footnote">
+      The first deliverable is the position, not a trade. Most teams we have looked at cannot
+      answer "how many dollars of next quarter's AI spend is price, and how many are volume?"
+      That number is computable from telemetry they are already emitting.
+    </p>
+  </section>
+
+  <section id="pipeline" class="section section-alt">
+    <h2 class="sec-title">From gateway telemetry to a bounded cost line</h2>
+    <p class="sec-sub">
+      Hedgerouter is not a model router. Keep whatever gateway chooses and serves your models.
+      Hedgerouter reads its output and prices the exposure underneath it.
+    </p>
+
+    <ol class="pipe">
+      <li>
+        <span class="pipe-n">01</span>
+        <h3>Ingest</h3>
+        <p>NDJSON exports, JSON access logs, OTLP spans, Claude Code transcripts. Nothing new to instrument, and replaying the same export twice is idempotent.</p>
+      </li>
+      <li>
+        <span class="pipe-n">02</span>
+        <h3>Normalize</h3>
+        <p>Model, provider, token counts, realized cost, latency, status, failover. The boundary is an allowlist, so prompts, paths, tool arguments and identities are never read in.</p>
+      </li>
+      <li>
+        <span class="pipe-n">03</span>
+        <h3>Position</h3>
+        <p>A daily ledger in dollars and tokens by model, provider and route, with the price component separated from the volume component.</p>
+      </li>
+      <li>
+        <span class="pipe-n">04</span>
+        <h3>Price</h3>
+        <p>Public compute indices and listed contracts, quoted at prices you could have transacted at, with fees included. No midpoints nobody could have traded.</p>
+      </li>
+      <li>
+        <span class="pipe-n">05</span>
+        <h3>Size</h3>
+        <p>A hedge is sized against a stated budget with a per-event cap, and never larger than the exposure it covers. Sizing runs before anything is placed, not after.</p>
+      </li>
+      <li>
+        <span class="pipe-n">06</span>
+        <h3>Report basis</h3>
+        <p>What fraction of your actual cost line the instrument tracks, as a number in every run. When the fit is poor, the output says so.</p>
+      </li>
+    </ol>
+  </section>
+
+  <section id="instruments" class="section">
+    <h2 class="sec-title">Where this risk is becoming tradeable</h2>
+    <p class="sec-sub">
+      A hedge is only as good as the instrument under it. Here is what exists, and what each
+      one actually settles on.
+    </p>
+
+    <div class="inst">
+      <article class="inst-row">
+        <div class="inst-head">
+          <h3>Compute-price indices</h3>
+          <span class="tag tag-live">closest to a real cost line</span>
+        </div>
+        <p>
+          Published GPU-hour indices move with what you pay for rented capacity. For a team
+          buying accelerator time on demand this is the exposure itself, not a proxy for it,
+          which is why it is the arm we instrument first.
+        </p>
+      </article>
+
+      <article class="inst-row">
+        <div class="inst-head">
+          <h3>Liquid compute markets</h3>
+          <span class="tag tag-soon">forming</span>
+        </div>
+        <p>
+          Spot and forward trading in compute capacity is being built out now. Once capacity
+          has a forward curve, an AI budget can be run the way an airline runs fuel: buy the
+          term, cap the peak, stop guessing.
+        </p>
+      </article>
+
+      <article class="inst-row">
+        <div class="inst-head">
+          <h3>Provider list-price contracts</h3>
+          <span class="tag tag-live">settles on the price you pay</span>
+        </div>
+        <p>
+          These settle on a provider's own published price page. For a customer paying list,
+          the settlement variable is not correlated with your cost, it is your cost. Tenors
+          are annual, so the first settlements land in 2027.
+        </p>
+      </article>
+
+      <article class="inst-row">
+        <div class="inst-head">
+          <h3>Blended $/token indices</h3>
+          <span class="tag tag-weak">weak fit for a single buyer</span>
+        </div>
+        <p>
+          A volume-weighted blend across labs. Most of its variance is the market's model mix
+          changing, not price. A buyer with a stable mix has little exposure to it, and the
+          tool reports that instead of routing you into it.
+        </p>
+      </article>
+    </div>
+
+    <p class="footnote">
+      A hedge on the wrong variable costs premium and leaves the risk in place, so basis is a
+      reported number in every run rather than an assumption in a pitch.
+    </p>
+  </section>
+
+  <section id="status" class="section section-alt">
+    <h2 class="sec-title">What runs today, and what doesn't</h2>
+    <p class="sec-sub">
+      Being specific here is cheaper than being caught out later. The measurement half is
+      real and you can run it this afternoon. The execution half is not built.
+    </p>
+
+    <div class="status">
+      <div class="status-col">
+        <h3><span class="sdot sdot-ok"></span> Runs today</h3>
+        <ul>
+          <li>Ingest from Weave Router exports, JSON access logs, OTLP spans and Claude Code transcripts</li>
+          <li>Metadata-only normalization behind an allowlist boundary</li>
+          <li>Daily dollar and token exposure ledger by model, provider and route</li>
+          <li>Basis reported against public compute-price indices</li>
+        </ul>
+      </div>
+      <div class="status-col">
+        <h3><span class="sdot sdot-wip"></span> In progress</h3>
+        <ul>
+          <li>Forward pricing against compute venues as they list capacity</li>
+          <li>Hedge sizing against a stated budget and per-event cap, evaluated offline</li>
+          <li>Recurring reports finance and engineering read from the same artifact</li>
+        </ul>
+      </div>
+      <div class="status-col">
+        <h3><span class="sdot sdot-no"></span> Not built</h3>
+        <ul>
+          <li>No order execution. Hedgerouter does not connect to a broker and places no trades.</li>
+          <li>No model routing. It stays out of your request path.</li>
+          <li>No prompt, completion or content storage, at any tier.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section id="privacy" class="section">
+    <div class="privacy">
+      <div>
+        <h2 class="sec-title">Your telemetry never has to leave your infrastructure</h2>
+        <p class="sec-sub">
+          Hedgerouter is self-hosted and normalization is an allowlist, not a log archive.
+          The fields below are not filtered after the fact. They are never read into the
+          ledger in the first place.
+        </p>
+        <div class="cta-row">
+          <a class="btn btn-ghost" href="https://github.com/kapilcdave/hedge-router#privacy-boundary">Read the boundary spec</a>
+        </div>
+      </div>
+      <ul class="never">
+        <li>Prompts and completions</li>
+        <li>Code, paths and filenames</li>
+        <li>Tool arguments and tool output</li>
+        <li>Credentials and API keys</li>
+        <li>Email addresses and gateway user IDs</li>
+        <li class="yes">Session IDs, pseudonymized with a rotating local salt</li>
+        <li class="yes">Telemetry upload, off by default</li>
+        <li class="yes"><code>delete-data --confirm DELETE</code> removes the ledger and identity</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="close">
+    <span class="mark close-mark" aria-hidden="true"></span>
+    <h2>Measure the exposure first.<br />Then decide what can be capped.</h2>
+    <div class="cta-row">
+      <a class="btn btn-primary" href="https://github.com/kapilcdave/hedge-router">Get the CLI</a>
+      <a class="btn btn-ghost" href="mailto:hello@hedgerouter.com">Talk to us</a>
+    </div>
+  </section>
+
+</main>
+
+<footer class="foot">
+  <div class="foot-brand">
+    <span class="mark foot-mark" aria-hidden="true"></span>
+    <span>Hedgerouter</span>
+  </div>
+  <p>Risk measurement software. Hedgerouter places no trades and is not a broker or adviser. Nothing here is investment advice.</p>
+  <p class="foot-links">
+    <a href="https://github.com/kapilcdave/hedge-router">GitHub</a>
+    <a href="mailto:hello@hedgerouter.com">Contact</a>
+  </p>
+</footer>
+
+</body>
+</html>
