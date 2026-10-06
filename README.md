@@ -92,9 +92,17 @@ rules when editing:
 
 1. **Don't overstate what runs.** The "What runs today, and what doesn't" section
    is the contract — ingest, the metadata-only boundary, the dollar/token exposure
-   ledger and basis reporting are shipped; forward pricing and hedge sizing are
-   in progress; execution, routing and content storage are explicitly not built.
+   ledger, basis reporting and paper hedge sizing are shipped; the order path is
+   built but has never been armed; forward pricing is in progress; compute
+   perpetuals, routing and content storage are not instrumented or not built.
    If a claim elsewhere on the page outruns that section, the claim is wrong.
+
+   The order path being built is **not** a hedging claim. `hedge-router
+   live-status` prints `would_arm: false`, and the research gate that would
+   authorise an order has not opened — on current data the demand signal scores
+   slightly worse than carrying the last index price forward. The page must never
+   imply a hedge executes. "Built, never armed" and "Zero placed; gate is shut"
+   are the strongest honest statements, and they are stronger than "not built".
 2. **Numbers in the terminal block are an illustrative run**, not a customer's.
    Keep them plausible and internally consistent (spend, token count, model
    concentration, basis fraction).
