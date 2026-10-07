@@ -101,11 +101,14 @@ h1 {
   letter-spacing: -0.024em;
 }
 
+/* a short lede wants a tighter measure than a paragraph: 64ch on two lines reads as a
+   leftover column width rather than a decision */
 .lede {
-  max-width: 64ch;
-  font-size: 18px;
+  max-width: 54ch;
+  font-size: 19px;
+  line-height: 1.52;
   color: var(--ink-2);
-  margin-bottom: 30px;
+  margin-bottom: 32px;
 }
 
 .cta-row { display: flex; flex-wrap: wrap; gap: 10px; }
