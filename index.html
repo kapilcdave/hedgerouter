@@ -57,15 +57,15 @@
   <section class="band run-band">
     <div class="run">
       <p class="caption">One run, against an export you already have</p>
-<pre><code><span class="p">$</span> hedge-router ingest --format weave --input decisions.ndjson
+<pre><code><span class="p">$</span> hedge ingest --format weave --input decisions.ndjson
      read 12,904 requests, stored <span class="n">0</span> prompts and <span class="n">0</span> identities
 
-<span class="p">$</span> hedge-router report
+<span class="p">$</span> hedge report
      spend        <span class="n">$18,420</span> / month
      volume       <span class="n">1.24B</span> tokens across 6 models, 3 providers
      concentration <span class="n">81%</span> of spend in 2 models
 
-<span class="p">$</span> hedge-router basis --index h100-spot
+<span class="p">$</span> hedge basis --index h100-spot
      <span class="n">0.62</span> of this cost line tracks the index (reported, not assumed)</code></pre>
     </div>
     <dl class="spec">
@@ -235,7 +235,7 @@
       The order path arms only when all five interlocks agree: a passing out-of-sample gate, an
       arming phrase in the environment, a trade-scoped venue key, no halt file, and an explicit
       flag. Anything missing is a dry run that prints the order it would have sent and names the
-      interlock that stopped it. <code>hedge-router live-status</code> prints that list, and today
+      interlock that stopped it. <code>hedge live-status</code> prints that list, and today
       it prints <code>would_arm: false</code>.
     </p>
   </section>
