@@ -19,6 +19,9 @@ import {
   ARM_ENV, ARM_PHRASE, Executor, executeSignals, executionPaths, loadCredentials
 } from './execute.js';
 import { cmeDryRunIntent, sizeCmeHedge } from './cme.js';
+import { discoverTokenMarkets, matchExposure } from './discover.js';
+import { computeExposure, parsePriceOverrides } from './exposure.js';
+import { holdingsFrom, netAgainstHoldings, planHedge, planToSignals } from './hedge.js';
 import { venueStatus } from './venues.js';
 import { createKalshiSnapshots, resolveKalshiSnapshots } from './kalshi.js';
 import { normalizeGatewayExport } from './ingest.js';
@@ -505,6 +508,116 @@ async function commandLiveOpen(args) {
   print(result);
 }
 
+async function loadExposure(args) {
+  const events = await loadEvents(args.events);
+  return computeExposure(events, {
+    days: Number(args.days || 30),
+    overrides: parsePriceOverrides(args.price)
+  });
+}
+
+async function commandExposure(args) {
+  const exposure = await loadExposure(args);
+  if (args.output) await writeJsonAtomic(path.resolve(args.output), exposure);
+  print(exposure);
+}
+
+async function loadInstruments(args) {
+  if (args.instruments) return readJson(path.resolve(args.instruments));
+  return discoverTokenMarkets({ series: args.series ? String(args.series).split(',') : null });
+}
+
+async function commandDiscover(args) {
+  const discovery = await loadInstruments(args);
+  const exposure = await loadExposure(args);
+  const matches = matchExposure(exposure, discovery.instruments);
+  if (args.output) await writeJsonAtomic(path.resolve(args.output), discovery);
+  print({
+    series: discovery.series.length,
+    instruments: discovery.instruments.length,
+    rejected: discovery.rejected.length,
+    matched: matches.pairs.map((pair) => ({
+      model: pair.model, direction: pair.direction,
+      avg_price_per_mtok: pair.exposure.avg_price_per_mtok,
+      mtok_per_day: pair.exposure.mtok_per_day,
+      ladder: pair.ladder.map((item) => ({ ticker: item.ticker, strike: item.strike, yes_bid: item.yes_bid, yes_ask: item.yes_ask, open_interest: item.open_interest }))
+    })),
+    unhedgeable: matches.unhedgeable,
+    exposure_warnings: exposure.warnings
+  });
+}
+
+async function buildHedgePlan(args) {
+  const discovery = await loadInstruments(args);
+  const exposure = await loadExposure(args);
+  const matches = matchExposure(exposure, discovery.instruments);
+  const plan = planHedge({
+    matches,
+    posture: args.posture || 'locked',
+    ratio: Number(args.ratio ?? 1),
+    horizonDays: args['horizon-days'] == null ? null : Number(args['horizon-days']),
+    capacityShare: Number(args['capacity-share'] ?? 0.25),
+    premiumBudget: args['premium-budget'] == null ? null : Number(args['premium-budget']),
+    maxLegPrice: Number(args['max-leg-price'] ?? 0.9),
+    feeRate: Number(args['fee-rate'] ?? 0.07)
+  });
+  return { plan: { ...plan, unhedgeable: matches.unhedgeable, exposure_warnings: exposure.warnings }, exposure };
+}
+
+async function commandHedgePlan(args) {
+  const { plan } = await buildHedgePlan(args);
+  if (args.output) await writeJsonAtomic(path.resolve(args.output), plan);
+  print(plan);
+}
+
+function limitsFrom(args) {
+  const limits = {};
+  if (args['max-contracts'] != null) limits.maxContractsPerOrder = Number(args['max-contracts']);
+  if (args['max-orders'] != null) limits.maxOrdersPerRun = Number(args['max-orders']);
+  if (args['max-notional'] != null) limits.maxNotionalPerOrder = Number(args['max-notional']);
+  if (args['max-notional-run'] != null) limits.maxNotionalPerRun = Number(args['max-notional-run']);
+  if (args['min-seconds-to-close'] != null) limits.minSecondsToClose = Number(args['min-seconds-to-close']);
+  return limits;
+}
+
+// Plans from the gateway ledger, nets against what the account already holds, and places limit
+// orders. Dry run unless `--live` and every interlock passes, the research gate included.
+async function commandHedgeOpen(args) {
+  const paths = executionPaths(args.dir ? path.resolve(args.dir) : undefined);
+  const live = args.live === true || args.live === 'true';
+  let { plan } = await buildHedgePlan(args);
+
+  const credentials = await loadCredentials();
+  let nettingError = null;
+  if (credentials.available) {
+    try {
+      const reader = new Executor({ armed: true, paths, credentials });
+      plan = netAgainstHoldings(plan, holdingsFrom({
+        positions: await reader.positions(), orders: await reader.restingOrders()
+      }));
+    } catch (error) {
+      nettingError = error.message;
+    }
+  } else {
+    nettingError = 'no credentials, so held positions and resting orders are unknown';
+  }
+  // Placing without knowing what is already held would buy the hedge twice on the second run.
+  if (live && nettingError) throw new Error(`Refusing live hedge orders: ${nettingError}`);
+
+  const signals = planToSignals(plan);
+  const result = await executeSignals({
+    signals,
+    live,
+    limits: limitsFrom(args),
+    paths,
+    postOnly: !(args['allow-taker'] === true || args['allow-taker'] === 'true'),
+    contractsFor: (signal) => signal.contracts
+  });
+  const output = { ...result, plan, netted: plan.netted === true, netting_error: nettingError };
+  if (args.output) await writeJsonAtomic(path.resolve(args.output), output);
+  print(output);
+}
+
 async function commandLivePositions(args) {
   const executor = new Executor({
     armed: true, paths: executionPaths(args.dir ? path.resolve(args.dir) : undefined)
@@ -614,6 +727,18 @@ Commands:
     [--max-notional USD] [--max-notional-run USD]
     [--min-seconds-to-close SEC] [--output FILE] [--dir DIR]
                                      Send gated hedge orders; dry-run unless --live and gate open
+  exposure [--events FILE] [--days N] [--price model:output=25,...]
+                                     Per-model tokens/day and realized $/MTok from the gateway ledger
+  discover [--events FILE] [--series A,B] [--instruments FILE] [--output FILE]
+                                     Find Kalshi list-price token markets and match them to your models
+  hedge-plan [--posture locked|floating] [--ratio R] [--horizon-days N]
+    [--capacity-share S] [--premium-budget USD] [--max-leg-price P]
+    [--events FILE] [--instruments FILE] [--price ...] [--output FILE]
+                                     Size a rung-by-rung hedge and its limit prices; never trades
+  hedge-open [same options as hedge-plan] [--live] [--allow-taker]
+    [--max-contracts N] [--max-orders N] [--max-notional USD] [--max-notional-run USD]
+    [--output FILE] [--dir DIR]      Net against holdings, then place limit orders; dry-run unless
+                                     --live and the research gate is open
   live-positions [--dir DIR]         Read account balance and open positions
   live-cancel --order ID [--live]    Cancel a resting order
   export --output FILE               Export sanitized local telemetry as JSON
@@ -655,6 +780,10 @@ async function main() {
   else if (command === 'cme-size') await commandCmeSize(args);
   else if (command === 'live-status') await commandLiveStatus(args);
   else if (command === 'live-open') await commandLiveOpen(args);
+  else if (command === 'exposure') await commandExposure(args);
+  else if (command === 'discover') await commandDiscover(args);
+  else if (command === 'hedge-plan') await commandHedgePlan(args);
+  else if (command === 'hedge-open') await commandHedgeOpen(args);
   else if (command === 'live-positions') await commandLivePositions(args);
   else if (command === 'live-cancel') await commandLiveCancel(args);
   else if (command === 'export') await commandExport(args);

@@ -22,6 +22,21 @@ test('normalizes Weave routing-decision NDJSON without retaining content', () =>
   assert.equal(result.events[0].prompt, undefined);
 });
 
+test('keeps the input/output cost split only when the gateway reported it', () => {
+  const split = normalizeGatewayExport(JSON.stringify({
+    id: 'a', requested_at: '2026-08-30T12:00:00Z', decision_model: 'gpt-mini', input_tokens: 120, output_tokens: 30,
+    actual_input_cost_usd: 0.001, actual_output_cost_usd: 0.002
+  }), { format: 'weave' }).events[0];
+  assert.equal(split.input_cost_usd, 0.001);
+  assert.equal(split.output_cost_usd, 0.002);
+  const total = normalizeGatewayExport(JSON.stringify({
+    id: 'b', requested_at: '2026-08-30T12:00:00Z', decision_model: 'gpt-mini', input_tokens: 120, output_tokens: 30,
+    actual_cost_usd: 0.003
+  }), { format: 'weave' }).events[0];
+  assert.equal(total.input_cost_usd, undefined);
+  assert.equal(total.output_cost_usd, undefined);
+});
+
 test('normalizes Agentgateway key-value access logs', () => {
   const input = '2026-08-30T12:01:00Z info request gateway=agentgateway protocol=llm http.status=200 gen_ai.provider.name=openai gen_ai.request.model=gpt-5-mini gen_ai.response.model=gpt-5-mini gen_ai.usage.input_tokens=68 gen_ai.usage.output_tokens=12 agw.ai.usage.cost.total=0.00042 duration=2488ms';
   const { events, skipped } = normalizeGatewayExport(input, { format: 'agentgateway' });

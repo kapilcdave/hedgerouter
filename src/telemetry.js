@@ -85,6 +85,9 @@ export async function createTelemetry(config, options = {}) {
       provider_status: Number(raw.provider_status || 0),
       error_category: raw.error_category || null,
       actual_cost_usd: Number(raw.actual_cost_usd || 0),
+      ...(raw.input_cost_usd == null || raw.output_cost_usd == null ? {} : {
+        input_cost_usd: Number(raw.input_cost_usd), output_cost_usd: Number(raw.output_cost_usd)
+      }),
       baseline_cost_usd: Number(raw.baseline_cost_usd || 0),
       savings_usd: Number(raw.savings_usd || 0),
       attempts: Number(raw.attempts || 0),

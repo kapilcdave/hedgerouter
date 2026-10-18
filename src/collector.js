@@ -13,7 +13,7 @@ const ALLOWED_FIELDS = new Set([
   'model', 'baseline_model', 'provider', 'control', 'route_reason', 'task_class',
   'input_tokens', 'cached_input_tokens', 'cache_write_input_tokens', 'output_tokens',
   'latency_ms', 'routing_overhead_ms', 'provider_status', 'error_category',
-  'actual_cost_usd', 'baseline_cost_usd', 'savings_usd', 'attempts',
+  'actual_cost_usd', 'input_cost_usd', 'output_cost_usd', 'baseline_cost_usd', 'savings_usd', 'attempts',
   'input_per_million', 'cached_input_per_million', 'cache_write_input_per_million',
   'output_per_million', 'tests_pass', 'rating'
 ]);
@@ -66,6 +66,11 @@ export function validateTelemetryEvent(event) {
     'latency_ms', 'routing_overhead_ms', 'actual_cost_usd', 'baseline_cost_usd', 'savings_usd'
   ]) {
     if (!finiteNumber(event[field]) || (field !== 'savings_usd' && event[field] < 0)) {
+      throw new Error(`Invalid numeric field: ${field}`);
+    }
+  }
+  for (const field of ['input_cost_usd', 'output_cost_usd']) {
+    if (event[field] !== undefined && (!finiteNumber(event[field]) || event[field] < 0)) {
       throw new Error(`Invalid numeric field: ${field}`);
     }
   }

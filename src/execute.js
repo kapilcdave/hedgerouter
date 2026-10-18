@@ -303,6 +303,10 @@ export class Executor {
     return this.request('GET', POSITIONS_PATH);
   }
 
+  async restingOrders() {
+    return this.request('GET', `${ORDER_PATH}?status=resting`);
+  }
+
   async order(orderId) {
     return this.request('GET', `${ORDER_PATH}/${encodeURIComponent(orderId)}`);
   }

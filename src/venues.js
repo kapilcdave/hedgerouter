@@ -37,6 +37,16 @@ export const VENUES = [
     settles_on: 'n/a'
   },
   {
+    id: 'architect-ax',
+    kind: 'perpetual-futures',
+    instruments: 'announced: perpetuals on GPU-hour rental and DRAM price indexes (Ornn), not on $/token',
+    data: false,
+    execution: false,
+    tradable: false,
+    blocker: 'no adapter; launch not confirmed, and a GPU-hour index would hedge a token bill only through the rental-to-posted-price chain (docs/token-price-basis.md)',
+    settles_on: 'Ornn GPU/DRAM index (announced)'
+  },
+  {
     id: 'polymarket-us',
     kind: 'prediction-market',
     instruments: 'unverified: no compute-price market has been found there',

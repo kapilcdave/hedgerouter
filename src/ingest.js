@@ -178,6 +178,8 @@ function normalizeCanonical(row, source) {
     provider_status: row.provider_status,
     error_category: row.error_category,
     actual_cost_usd: row.actual_cost_usd,
+    input_cost_usd: row.input_cost_usd,
+    output_cost_usd: row.output_cost_usd,
     baseline_cost_usd: row.baseline_cost_usd,
     savings_usd: row.savings_usd,
     attempts: row.attempts,
@@ -394,6 +396,10 @@ function normalizeMetadata(row, source) {
   const inputCost = number(lookup(flat, 'actual_input_cost_usd', 'agw.ai.usage.cost.input'));
   const outputCost = number(lookup(flat, 'actual_output_cost_usd', 'agw.ai.usage.cost.output'));
   const totalCost = lookup(flat, 'actual_cost_usd', 'agw.ai.usage.cost.total', 'cost_usd');
+  // The per-direction split is what a $/token hedge is sized on; keep it only when the gateway
+  // reported it, because a total divided by guesswork would put a made-up price on the ledger.
+  const hasSplit = lookup(flat, 'actual_input_cost_usd', 'agw.ai.usage.cost.input') != null
+    && lookup(flat, 'actual_output_cost_usd', 'agw.ai.usage.cost.output') != null;
   const httpStatus = lookup(flat,
     'upstream_status_code', 'http.response.status_code', 'http.status_code', 'http.status', 'status');
   const spanStatus = number(lookup(flat, 'status_code'));
@@ -421,6 +427,7 @@ function normalizeMetadata(row, source) {
     provider_status: status,
     error_category: failed ? statusCategory(status) : null,
     actual_cost_usd: totalCost == null ? inputCost + outputCost : number(totalCost),
+    ...(hasSplit ? { input_cost_usd: inputCost, output_cost_usd: outputCost } : {}),
     baseline_cost_usd: number(lookup(flat, 'baseline_cost_usd')),
     savings_usd: number(lookup(flat, 'savings_usd')),
     attempts: boolean(lookup(flat, 'failover_used')) ? 2 : Math.max(1, number(lookup(flat, 'attempts'), 1))

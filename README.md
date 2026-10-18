@@ -489,6 +489,44 @@ below finds the demand signal slightly *worse* than index persistence, so arming
 fees to express a hypothesis this repository has already failed to support. The gate is the
 conclusion of the research, and it stays shut until the research changes it.
 
+## Hedging a token bill
+
+A second path sizes from exposure instead of from a forecast. It is still gated: placing its orders
+requires the research gate described under [Execution](#execution).
+
+```sh
+hedge exposure                          # tokens/day and realized $/MTok per model and direction
+hedge discover --output instruments.json  # Kalshi list-price ladders, matched to the models you call
+hedge hedge-plan --instruments instruments.json --posture locked
+hedge hedge-open --instruments instruments.json     # nets against holdings; dry run by default
+```
+
+`exposure` reads the gateway ledger: spend over tokens, separately for input and output, from
+sources that report the split (Weave, Agentgateway; Cloudflare, Vercel and Claude Code report only a
+total, so pass `--price model:output=25`). `discover` finds markets by contract text rather than
+labels, and matches a gateway model to a ladder only when it is that model or a dated snapshot of it:
+`gpt-5.5-mini` is not hedged with GPT 5.5 strikes, it is reported as unhedgeable.
+
+The realized average price selects the strikes. Locked into a rate P, a fall in list price to K
+strands P−K per MTok, so `hedge-plan` buys YES on every rung below P, each sized to the step from
+the rung above, which makes the cumulative payout at K equal the loss at K (the worked example in
+[`docs/list-price-token-markets.md`](docs/list-price-token-markets.md) falls out exactly). Paying
+list and worried about a rise, `--posture floating` buys NO on rungs above P. Order prices come from
+the book, not from P: one tick inside the best bid, strictly below the ask, `post_only`. One-sided
+books are skipped, as are rungs priced at 90¢ or more, and every leg reports whether it was limited
+by `--capacity-share` (default 25% of open interest), `--premium-budget`, or `--ratio`.
+
+`hedge-open` goes through the same `Executor` as `live-open`, so it is held shut by the same
+research gate and the same four other interlocks. With the gate closed it prints the orders it
+would have sent and journals them. Before a live run it reads positions and resting orders and
+plans only the shortfall, and it refuses to send if it cannot read them; running the planner twice
+does not buy the hedge twice.
+
+What this does not fix: the ladders are annual contracts with 6k–7k contracts of open interest a
+rung, and none has settled. The sizing is mechanical; whether the price is worth paying is not
+something this repository has measured. Compute perpetuals are announced for GPU-hour and DRAM
+indexes, not tokens, and have no adapter (`hedge venues`).
+
 ## Optional legacy proxy
 
 The original OpenAI-compatible router remains available as a demo and migration
