@@ -103,9 +103,9 @@ rules when editing:
    slightly worse than carrying the last index price forward. The page must never
    imply a hedge executes. "Built, never armed" and "Zero placed; gate is shut"
    are the strongest honest statements, and they are stronger than "not built".
-2. **Numbers in the terminal block are an illustrative run**, not a customer's.
-   Keep them plausible and internally consistent (spend, token count, model
-   concentration, basis fraction).
+2. **The terminal block is a condensed run on the synthetic ledger** in the
+   hedge-router repo (`examples/synthetic-gateway-month.mjs`), not a customer's.
+   Only show commands that exist. There is no `hedge basis`; basis is not measured.
 
 Contact address: `hi@hedgerouter.com` (Email Routing forward, not a mailbox) — it appears in
 the close CTA and the footer.

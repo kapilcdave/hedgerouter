@@ -47,7 +47,7 @@
     <h1>Your AI bill is a commodity position.</h1>
     <p class="lede">
       Point it at your gateway logs. It returns your AI spend as a dollar position, split
-      into price and usage, then reports how much of it each instrument actually tracks.
+      into price and usage, then finds the listed contracts that settle on those prices and sizes a hedge against their real order books.
     </p>
     <div class="cta-row">
       <a class="btn btn-primary" href="https://github.com/kapilcdave/hedge-router">Measure your exposure</a>
@@ -57,17 +57,17 @@
 
   <section class="band run-band">
     <div class="run">
-      <p class="caption">One run, against an export you already have</p>
-<pre><code><span class="p">$</span> hedge ingest --format weave --input decisions.ndjson
-     read 12,904 requests, stored <span class="n">0</span> prompts and <span class="n">0</span> identities
+      <p class="caption">One run, condensed, on a synthetic ledger</p>
+<pre><code><span class="p">$</span> hedge ingest --format weave --input month.ndjson
+     720 rows accepted, <span class="n">0</span> prompts and <span class="n">0</span> identities stored
 
-<span class="p">$</span> hedge report
-     spend        <span class="n">$18,420</span> / month
-     volume       <span class="n">1.24B</span> tokens across 6 models, 3 providers
-     concentration <span class="n">81%</span> of spend in 2 models
+<span class="p">$</span> hedge exposure
+     gpt-5.5   <span class="n">$15,445</span> / 30 days
+               input <span class="n">49.6</span> MTok/day at <span class="n">$5.00</span>, output <span class="n">9.0</span> MTok/day at <span class="n">$30.00</span>
 
-<span class="p">$</span> hedge basis --index h100-spot
-     <span class="n">0.62</span> of this cost line tracks the index (reported, not assumed)</code></pre>
+<span class="p">$</span> hedge hedge-plan --horizon-days 90
+     7 limit orders against live order books, <span class="n">$606</span> premium
+     fillable now: <span class="n">8%</span> of input cover, <span class="n">24%</span> of output cover</code></pre>
     </div>
     <dl class="spec">
       <div><dt>Runs</dt><dd>Self-hosted, inside your own infrastructure</dd></div>
@@ -141,7 +141,7 @@
       </li>
       <li>
         <h3>Report basis</h3>
-        <p>What fraction of your actual cost line the instrument tracks, as a number in every run. When the fit is poor, the output says so.</p>
+        <p>What fraction of your actual cost line an instrument tracks. Until a real ledger has been compared against a contract, every sizing says basis is not measured, and it never assumes zero.</p>
       </li>
     </ol>
   </section>
@@ -199,8 +199,8 @@
     <p class="note">
       Compute-price indices are the arm we instrument first, because for a team renting
       capacity they are the exposure itself rather than a proxy for it. A hedge on the wrong
-      variable costs premium and leaves the risk in place, so basis is a reported number in
-      every run rather than an assumption in a pitch.
+      variable costs premium and leaves the risk in place, so every sizing states basis, as
+      “not measured” until a real ledger has been compared, rather than assuming it away.
     </p>
   </section>
 
@@ -279,7 +279,7 @@
         <tr><td>Ingest from Weave Router exports, JSON access logs, OTLP spans, Claude Code transcripts</td><td>Runs today</td></tr>
         <tr><td>Metadata-only normalization behind an allowlist boundary</td><td>Runs today</td></tr>
         <tr><td>Daily exposure ledger in dollars and tokens, by model, provider and route</td><td>Runs today</td></tr>
-        <tr><td>Basis reported against public compute-price indices</td><td>Runs today</td></tr>
+        <tr><td>Basis against a real company’s cost line</td><td>Not measured yet; needs a real ledger</td></tr>
         <tr><td>Hedge sizing against a stated budget and per-event cap</td><td>Runs today, paper</td></tr>
         <tr><td>Discovery of listed per-token price contracts, matched to the models you use, with netting against held positions</td><td>Runs today, dry run</td></tr>
         <tr><td>Order path to the venue: signed requests, idempotent order ids, hard notional caps, kill switch</td><td>Built, never armed</td></tr>
