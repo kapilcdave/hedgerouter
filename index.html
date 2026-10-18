@@ -34,6 +34,7 @@
     <a href="#exposure">The exposure</a>
     <a href="#pipeline">How it works</a>
     <a href="#instruments">Instruments</a>
+    <a href="#example">Worked example</a>
     <a href="#status">What runs today</a>
     <a href="https://github.com/kapilcdave/hedge-router">GitHub</a>
   </nav>
@@ -203,6 +204,64 @@
     </p>
   </section>
 
+  <section id="example" class="section">
+    <h2>A worked example, and what the order book says</h2>
+    <p class="sub">
+      A synthetic company, not a customer: $15,445 a month on one model at a committed rate of
+      $5 per million input tokens and $30 per million output. The plan below was sized against the
+      live order books of the per-token list-price contracts on 18 October 2026.
+    </p>
+
+    <div class="run">
+      <p class="caption">Synthetic ledger, live order books. Nothing was sent to a venue.</p>
+<pre><code><span class="p">$</span> hedge exposure
+     gpt-5.5   input   <span class="n">49.6</span> MTok/day at <span class="n">$5.00</span>
+               output   <span class="n">9.0</span> MTok/day at <span class="n">$30.00</span>
+
+<span class="p">$</span> hedge hedge-plan --posture locked --horizon-days 90
+     7 limit orders, <span class="n">5,445</span> contracts, premium <span class="n">$606</span>, fees at most <span class="n">$37</span>
+     every order limited by the <span class="n">25%</span> open-interest cap
+     one rung skipped: no bid</code></pre>
+    </div>
+
+    <table class="status">
+      <thead>
+        <tr>
+          <th scope="col">Side</th>
+          <th scope="col">Rungs bought</th>
+          <th scope="col">Full cover</th>
+          <th scope="col">Fillable now</th>
+          <th scope="col">Premium</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Input, $5 committed</td>
+          <td data-label="Rungs bought">$4, $3, $2, $1</td>
+          <td data-label="Full cover">17,836 contracts</td>
+          <td data-label="Fillable now">1,506 (8%)</td>
+          <td data-label="Premium">$229</td>
+        </tr>
+        <tr>
+          <td>Output, $30 committed</td>
+          <td data-label="Rungs bought">$25, $20, $15</td>
+          <td data-label="Full cover">16,108 contracts</td>
+          <td data-label="Fillable now">3,939 (24%)</td>
+          <td data-label="Premium">$377</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <p class="note">
+      The finding is the second column. The listed per-token contracts across all three models
+      carry about 50,000 contracts of open interest in total, so a team spending $15,000 a month
+      can already fill only a fraction of the cover it would want. The instruments are real and
+      priced; the depth is not there yet. That is the reason to measure exposure before sizing
+      anything, and it is the number to watch as these markets grow.
+      <a href="https://github.com/kapilcdave/hedge-router/blob/main/docs/worked-example.md">Reproduce it</a>.
+    </p>
+  </section>
+
   <section id="status" class="section">
     <h2>What runs today, and what doesn’t</h2>
     <p class="sub">
@@ -222,6 +281,7 @@
         <tr><td>Daily exposure ledger in dollars and tokens, by model, provider and route</td><td>Runs today</td></tr>
         <tr><td>Basis reported against public compute-price indices</td><td>Runs today</td></tr>
         <tr><td>Hedge sizing against a stated budget and per-event cap</td><td>Runs today, paper</td></tr>
+        <tr><td>Discovery of listed per-token price contracts, matched to the models you use, with netting against held positions</td><td>Runs today, dry run</td></tr>
         <tr><td>Order path to the venue: signed requests, idempotent order ids, hard notional caps, kill switch</td><td>Built, never armed</td></tr>
         <tr><td>Any live order, ever</td><td>Zero placed; gate is shut</td></tr>
         <tr><td>Forward pricing as compute venues list capacity</td><td>In progress</td></tr>

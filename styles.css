@@ -167,6 +167,8 @@ h1 {
 .run .p { color: var(--ink); }
 .run .n { color: var(--ink); font-weight: 500; }
 
+.section .run { margin-bottom: 32px; max-width: 78ch; }
+
 .spec { margin: 0; font-size: 14.5px; }
 
 .spec div {
