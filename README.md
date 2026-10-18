@@ -107,5 +107,5 @@ rules when editing:
    Keep them plausible and internally consistent (spend, token count, model
    concentration, basis fraction).
 
-Open placeholder: the contact address `hello@hedgerouter.com` is not yet a real
-mailbox — it appears in the close CTA and the footer.
+Contact address: `hi@hedgerouter.com` (Email Routing forward, not a mailbox) — it appears in
+the close CTA and the footer.
