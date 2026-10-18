@@ -10,7 +10,7 @@ Draft message, edit freely.
 > Vercel AI Gateway, or any OTLP source), run locally by you or on a call with me. It reads
 > metadata only: model, provider, token counts, cost, latency, status. It never reads prompts,
 > completions, code, paths, credentials or user IDs, and nothing is uploaded. You get your exposure
-> report and an honest basis number. I get to learn whether it matches anything tradeable.
+> report and an honest read on how closely your price tracks a listed contract. I get to learn whether it matches anything tradeable.
 >
 > No trading, no commitment, and I'll tell you if the answer is "nothing here fits your bill."
 
@@ -26,8 +26,8 @@ hedge hedge-plan --horizon-days 90
 ```
 
 Then record, with their permission: monthly spend, share of spend in models that have a listed
-contract, whether they pay list or a discounted/committed rate, and the output of `hedge basis`.
-That is the first real basis number for the memo.
+contract, whether they pay list or a discounted/committed rate, and the realized $/MTok from
+`hedge exposure`. Comparing that to the contract terms is the first real basis number for the memo.
 
 ## Who to ask first
 

@@ -47,8 +47,9 @@ cost, not a proxy for it. See `docs/list-price-token-markets.md`.
 ## What is not proven
 
 - **Basis on a real bill.** This is the main thing. The worked example is synthetic and built to
-  sit on the committed rate. One real company's ledger, run through `hedge basis`, is the first
-  evidence of whether a bill tracks these contracts. [blank: not yet measured]
+  sit on the committed rate. One real company's ledger, compared by hand against the contract terms, is the first
+  evidence of whether a bill tracks these contracts. There is no `hedge basis` command yet; the
+  planner reports basis as not measured. [blank: not yet measured]
 - **Demand.** No design partner yet. [blank: fill in when there is one]
 - **Fit of a dated binary to a continuous cost line.** List prices change rarely and in steps; a
   company that is not on list price, or is on a discount or committed-spend contract, has weaker

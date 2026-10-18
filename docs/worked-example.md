@@ -53,8 +53,9 @@ the ask, so there is no taker cost to hide.
 ## What this does not show
 
 - Whether any real company's bill moves with these contracts. This ledger was built to sit exactly
-  on the committed rate, so basis is perfect by construction. `hedge basis` on a real ledger is
-  the missing number.
+  on the committed rate, so basis is perfect by construction. Comparing a real ledger's
+  realized $/MTok and contract terms to the contract is the missing number. There is no `hedge basis`
+  command yet, and the planner reports basis as not measured.
 - Whether the premiums are good value. These are binary contracts on a list price that a provider
   changes rarely; whether the market prices that well is not tested here.
 - That a live order would fill. The order path has never been armed.
