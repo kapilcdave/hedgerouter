@@ -1,7 +1,4 @@
-.hedge-router/
-.comp/
-hedge-router.config.json
-comp.config.json
+.DS_Store
 node_modules/
-coverage/
-*.log
+.vercel
+.env*

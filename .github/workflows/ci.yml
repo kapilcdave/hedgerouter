@@ -9,6 +9,9 @@ permissions:
 
 jobs:
   test:
+    defaults:
+      run:
+        working-directory: cli
     runs-on: ubuntu-latest
     strategy:
       matrix:
