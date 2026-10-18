@@ -1,6 +1,6 @@
 # Hedgerouter landing page
 
-Static one-page site for Hedgerouter. No framework, no build step — `index.html`,
+This is `site/` in the hedgerouter monorepo (the CLI is in `cli/`). Static one-page site for Hedgerouter. No framework, no build step — `index.html`,
 `styles.css` and `assets/`.
 
 ```
@@ -27,8 +27,8 @@ python3 -m http.server 4321
 
 Project: `kapilcdaves-projects/hedgerouter` → https://hedgerouter.vercel.app
 
-Framework preset: **Other**. No build command, no output directory — the repo root
-is served as-is.
+Framework preset: **Other**. No build command, no output directory. The project's Root
+Directory is `site`, so that directory is served as-is.
 
 Pushing to `main` deploys to production; any other branch gets a preview URL.
 Manual deploys, if the Git integration is ever down:
@@ -104,7 +104,7 @@ rules when editing:
    imply a hedge executes. "Built, never armed" and "Zero placed; gate is shut"
    are the strongest honest statements, and they are stronger than "not built".
 2. **The terminal block is a condensed run on the synthetic ledger** in the
-   hedge-router repo (`examples/synthetic-gateway-month.mjs`), not a customer's.
+   CLI (`cli/examples/synthetic-gateway-month.mjs`), not a customer's.
    Only show commands that exist. There is no `hedge basis`; basis is not measured.
 
 Contact address: `hi@hedgerouter.com` (Email Routing forward, not a mailbox) — it appears in
