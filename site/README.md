@@ -97,7 +97,7 @@ rules when editing:
    perpetuals, routing and content storage are not instrumented or not built.
    If a claim elsewhere on the page outruns that section, the claim is wrong.
 
-   The order path being built is **not** a hedging claim. `hedge-router
+   The order path being built is **not** a hedging claim. `hedge
    live-status` prints `would_arm: false`, and the research gate that would
    authorise an order has not opened — on current data the demand signal scores
    slightly worse than carrying the last index price forward. The page must never
