@@ -1,0 +1,377 @@
+/* Hedgerouter — a risk memo, not a landing page.
+   Principle: nothing here is decoration. Every rule, number and label carries
+   information. No cards, no shadows, no gradients; radius only on controls. */
+
+:root {
+  --paper: #f6f7f5;
+  --paper-2: #eceee9;
+  --ink: #16181b;
+  --ink-2: #5a6067;
+  --rule: #d2d5cf;
+  --signal: #17456e;
+
+  --sans: "IBM Plex Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  --max: 1080px;
+  --pad: max(24px, calc((100% - var(--max)) / 2));
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 16.5px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3 { font-weight: 600; }
+p { margin: 0; }
+
+a { color: inherit; }
+
+code, pre { font-family: var(--mono); }
+
+code {
+  font-size: .88em;
+  background: var(--paper-2);
+  padding: 1px 4px;
+}
+
+pre code { background: none; padding: 0; font-size: inherit; }
+
+/* ---------- nav ---------- */
+.nav {
+  max-width: var(--max);
+  margin: 0 auto;
+  padding: 20px 24px;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 24px;
+  border-bottom: 1px solid var(--rule);
+}
+
+.brand { display: flex; align-items: center; gap: 9px; text-decoration: none; }
+
+/* the mark is a traced SVG used as a mask, so it takes the text colour */
+.mark {
+  display: block;
+  flex: none;
+  width: 28px;
+  height: 17px;
+  background: currentColor;
+  -webkit-mask: url(/assets/mark.svg) center / contain no-repeat;
+  mask: url(/assets/mark.svg) center / contain no-repeat;
+}
+
+.brand-word { font-weight: 600; font-size: 17px; }
+
+.nav-links {
+  display: flex;
+  align-items: baseline;
+  gap: 24px;
+  font-size: 14.5px;
+  color: var(--ink-2);
+}
+
+.nav-links a { text-decoration: none; }
+.nav-links a:hover { color: var(--ink); text-decoration: underline; text-underline-offset: 3px; }
+
+/* ---------- hero ---------- */
+.hero {
+  padding: 92px var(--pad) 84px;
+}
+
+.standfirst {
+  font-size: 15px;
+  color: var(--ink-2);
+  margin-bottom: 20px;
+}
+
+h1 {
+  margin: 0 0 26px;
+  max-width: 21ch;
+  font-size: clamp(36px, 6.2vw, 68px);
+  line-height: 1.02;
+  letter-spacing: -0.024em;
+}
+
+/* a short lede wants a tighter measure than a paragraph: 64ch on two lines reads as a
+   leftover column width rather than a decision */
+.lede {
+  max-width: 54ch;
+  font-size: 19px;
+  line-height: 1.52;
+  color: var(--ink-2);
+  margin-bottom: 32px;
+}
+
+.cta-row { display: flex; flex-wrap: wrap; gap: 10px; }
+
+.btn {
+  display: inline-block;
+  border-radius: 2px;
+  padding: 11px 18px;
+  font-size: 15px;
+  font-weight: 500;
+  text-decoration: none;
+  border: 1px solid var(--ink);
+}
+
+.btn-primary { background: var(--ink); color: var(--paper); }
+.btn-primary:hover { background: #000; }
+
+.btn-ghost { color: var(--ink); }
+.btn-ghost:hover { background: var(--paper-2); }
+
+/* ---------- the run, and the spec beside it ---------- */
+.band {
+  background: var(--paper-2);
+  border-top: 1px solid var(--rule);
+  border-bottom: 1px solid var(--rule);
+  padding: 44px var(--pad);
+}
+
+.run-band {
+  display: grid;
+  grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr);
+  gap: 52px;
+  align-items: start;
+}
+
+.run, .spec { min-width: 0; }
+
+.caption {
+  font-size: 13px;
+  color: var(--ink-2);
+  margin-bottom: 10px;
+}
+
+.run pre {
+  margin: 0;
+  padding: 18px 20px;
+  overflow-x: auto;
+  background: #fff;
+  border: 1px solid var(--rule);
+  font-size: 12.6px;
+  line-height: 1.95;
+  color: var(--ink-2);
+}
+
+/* the prompt and the figures are the only marked-up characters in the block */
+.run .p { color: var(--ink); }
+.run .n { color: var(--ink); font-weight: 500; }
+
+.section .run { margin-bottom: 32px; max-width: 78ch; }
+
+.spec { margin: 0; font-size: 14.5px; }
+
+.spec div {
+  display: grid;
+  grid-template-columns: 74px 1fr;
+  gap: 14px;
+  padding: 9px 0;
+  border-top: 1px solid var(--rule);
+}
+
+.spec div:last-child { border-bottom: 1px solid var(--rule); }
+
+.spec dt { color: var(--ink-2); }
+.spec dd { margin: 0; }
+
+/* ---------- sections ---------- */
+.section { padding: 84px var(--pad); }
+.section + .section { border-top: 1px solid var(--rule); }
+
+.section h2 {
+  margin: 0 0 12px;
+  max-width: 30ch;
+  font-size: clamp(23px, 2.8vw, 32px);
+  line-height: 1.16;
+  letter-spacing: -0.016em;
+}
+
+.sub {
+  max-width: 62ch;
+  color: var(--ink-2);
+  margin-bottom: 40px;
+}
+
+.note {
+  margin-top: 30px;
+  padding-top: 18px;
+  border-top: 1px solid var(--rule);
+  max-width: 78ch;
+  font-size: 14.5px;
+  color: var(--ink-2);
+}
+
+.note a { text-decoration-thickness: 1px; text-underline-offset: 3px; color: var(--signal); }
+
+/* the four facts: a claim and its consequence, ruled, not numbered —
+   they are simultaneous, not a sequence */
+.facts { margin: 0; }
+
+.facts div {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.7fr);
+  gap: 40px;
+  padding: 20px 0;
+  border-top: 1px solid var(--rule);
+}
+
+.facts div:last-child { border-bottom: 1px solid var(--rule); }
+
+.facts dt { font-weight: 500; }
+.facts dd { margin: 0; color: var(--ink-2); }
+
+/* the pipeline is a real sequence, so it is numbered */
+.steps {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: step;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  column-gap: 40px;
+}
+
+.steps li {
+  counter-increment: step;
+  padding: 16px 0 22px;
+  border-top: 1px solid var(--rule);
+}
+
+.steps li::before {
+  content: counter(step, decimal-leading-zero);
+  font-family: var(--mono);
+  font-size: 12.5px;
+  color: var(--ink-2);
+}
+
+.steps h3 { margin: 4px 0 6px; font-size: 17px; }
+.steps p { font-size: 14.5px; color: var(--ink-2); }
+
+/* ---------- tables ---------- */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+th, td {
+  padding: 14px 20px 14px 0;
+  vertical-align: top;
+  border-top: 1px solid var(--rule);
+}
+
+tbody tr:last-child td { border-bottom: 1px solid var(--rule); }
+
+th {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--ink-2);
+  border-top: 0;
+  padding-top: 0;
+}
+
+td { font-size: 15px; }
+td:first-child { font-weight: 500; padding-right: 32px; }
+td:last-child, th:last-child { padding-right: 0; }
+
+thead th:nth-child(3) { width: 34%; }
+thead th:last-child { width: 15%; white-space: nowrap; }
+
+.status thead th:nth-child(3) { width: auto; }
+.status thead th:last-child { width: 30%; }
+.status td:first-child { font-weight: 400; }
+
+td:last-child { color: var(--ink-2); }
+.status td:last-child { white-space: nowrap; }
+.status td code { white-space: nowrap; }
+
+/* ---------- close ---------- */
+.close {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 28px;
+  padding-top: 68px;
+  padding-bottom: 68px;
+  border-bottom: 0;
+}
+
+.close h2 {
+  margin: 0 0 8px;
+  max-width: 26ch;
+  font-size: clamp(23px, 2.8vw, 32px);
+  line-height: 1.16;
+  letter-spacing: -0.016em;
+}
+
+.close p { font-size: 15px; color: var(--ink-2); }
+
+/* ---------- footer ---------- */
+.foot {
+  max-width: var(--max);
+  margin: 0 auto;
+  padding: 24px 24px 56px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px 32px;
+  justify-content: space-between;
+  font-size: 13.5px;
+  color: var(--ink-2);
+}
+
+.foot b { font-weight: 600; color: var(--ink); }
+.foot p { max-width: 70ch; }
+
+.foot-links { display: flex; gap: 20px; }
+.foot-links a { text-underline-offset: 3px; }
+
+/* ---------- responsive ---------- */
+@media (max-width: 900px) {
+  /* minmax(0,…) not 1fr: a bare 1fr takes the <pre>'s min-content as its
+     minimum and blows the page out horizontally */
+  .run-band { grid-template-columns: minmax(0, 1fr); gap: 32px; }
+  .steps { grid-template-columns: repeat(2, 1fr); }
+  .facts div { grid-template-columns: 1fr; gap: 6px; }
+  .nav-links a:not(:last-child) { display: none; }
+}
+
+@media (max-width: 620px) {
+  body { font-size: 16px; }
+  .hero { padding-top: 60px; padding-bottom: 56px; }
+  .section { padding-top: 60px; padding-bottom: 60px; }
+  .steps { grid-template-columns: 1fr; }
+  .spec div { grid-template-columns: 68px 1fr; }
+  .lede { font-size: 17px; }
+  .run pre { font-size: 11.4px; padding: 14px; }
+
+  /* a two-column table at this width is a stack of label/value pairs */
+  thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+  tr { display: block; border-top: 1px solid var(--rule); padding: 14px 0; }
+  td { display: block; border: 0; padding: 0; }
+  td:first-child { padding-right: 0; margin-bottom: 4px; }
+  td + td { font-size: 14.5px; }
+
+  /* a stacked row of bare values loses the column it came from, so the
+     wider table carries its own labels below 620px */
+  td[data-label]::before {
+    content: attr(data-label);
+    display: block;
+    margin-top: 10px;
+    font-size: 12.5px;
+    color: var(--ink-2);
+  }
+  tbody tr:last-child { border-bottom: 1px solid var(--rule); }
+  tbody tr:last-child td { border-bottom: 0; }
+  .status td:last-child { white-space: normal; }
+}

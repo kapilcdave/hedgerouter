@@ -1,0 +1,351 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>hedgerouter: your AI bill is a commodity position</title>
+<meta name="description" content="Compute and token prices move; your AI budget is written as if they don’t. Hedgerouter turns the metadata your gateway already emits into a dollar exposure ledger, then reports how much of that cost line each available instrument actually tracks." />
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml" />
+<link rel="icon" href="/assets/favicon.png" sizes="32x32" type="image/png" />
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
+<meta name="theme-color" content="#f6f7f5" />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://hedgerouter.vercel.app/" />
+<meta property="og:site_name" content="hedgerouter" />
+<meta property="og:title" content="hedgerouter: your AI bill is a commodity position" />
+<meta property="og:description" content="Compute and token prices move. Your AI budget is written as if they don’t. Measure the exposure in dollars, then decide what can be capped." />
+<meta property="og:image" content="https://hedgerouter.vercel.app/assets/og.png" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta name="twitter:card" content="summary_large_image" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+
+<header class="nav">
+  <a class="brand" href="/">
+    <span class="mark" aria-hidden="true"></span>
+    <span class="brand-word">hedgerouter</span>
+  </a>
+  <nav class="nav-links">
+    <a href="#exposure">The exposure</a>
+    <a href="#pipeline">How it works</a>
+    <a href="#instruments">Instruments</a>
+    <a href="#example">Worked example</a>
+    <a href="#status">What runs today</a>
+    <a href="https://github.com/kapilcdave/hedge-router">GitHub</a>
+  </nav>
+</header>
+
+<main>
+
+  <section class="hero">
+    <p class="standfirst">The hedging layer for enterprise AI.</p>
+    <h1>Your AI bill is a commodity position.</h1>
+    <p class="lede">
+      Point it at your gateway logs. It returns your AI spend as a dollar position, split
+      into price and usage, then finds the listed contracts that settle on those prices and sizes a hedge against their real order books.
+    </p>
+    <div class="cta-row">
+      <a class="btn btn-primary" href="https://github.com/kapilcdave/hedge-router">Measure your exposure</a>
+      <a class="btn btn-ghost" href="#pipeline">See how it works</a>
+    </div>
+  </section>
+
+  <section class="band run-band">
+    <div class="run">
+      <p class="caption">One run, condensed, on a synthetic ledger</p>
+<pre><code><span class="p">$</span> hedge ingest --format weave --input month.ndjson
+     720 rows accepted, <span class="n">0</span> prompts and <span class="n">0</span> identities stored
+
+<span class="p">$</span> hedge exposure
+     gpt-5.5   <span class="n">$15,445</span> / 30 days
+               input <span class="n">49.6</span> MTok/day at <span class="n">$5.00</span>, output <span class="n">9.0</span> MTok/day at <span class="n">$30.00</span>
+
+<span class="p">$</span> hedge hedge-plan --horizon-days 90
+     7 limit orders against live order books, <span class="n">$606</span> premium
+     fillable now: <span class="n">8%</span> of input cover, <span class="n">24%</span> of output cover</code></pre>
+    </div>
+    <dl class="spec">
+      <div><dt>Runs</dt><dd>Self-hosted, inside your own infrastructure</dd></div>
+      <div><dt>Reads</dt><dd>Gateway metadata only, behind an allowlist</dd></div>
+      <div><dt>Needs</dt><dd>Node 20 or newer, no runtime dependencies</dd></div>
+      <div><dt>Sits</dt><dd>Outside your request path; it serves no traffic</dd></div>
+      <div><dt>License</dt><dd>MIT</dd></div>
+    </dl>
+  </section>
+
+  <section id="exposure" class="section">
+    <h2>Compute is a commodity. Your budget treats it like a subscription.</h2>
+    <p class="sub">
+      Companies shipping AI have taken on a commodity position nobody priced. Four things
+      are true at the same time, and they push the same direction.
+    </p>
+
+    <dl class="facts">
+      <div>
+        <dt>GPU-hours have a spot price</dt>
+        <dd>Rented accelerator capacity reprices week to week and public indices already quote it. If you buy on demand, you hold that price risk with no cap and no forward.</dd>
+      </div>
+      <div>
+        <dt>Token prices are a floating rate</dt>
+        <dd>Providers cut list prices, raise them, deprecate models, and move your mix underneath you. A rate card is the price you pay this quarter, not a fixed cost.</dd>
+      </div>
+      <div>
+        <dt>Usage grows with the product</dt>
+        <dd>Every agent you ship raises consumption. Volume growth and price moves compound, and the usual remedy is to make the product worse.</dd>
+      </div>
+      <div>
+        <dt>Nobody holds the position in dollars</dt>
+        <dd>Finance sees one invoice a month. Engineering sees tokens per request. Neither is an exposure, and you cannot bound what nobody has written down as a dollar position.</dd>
+      </div>
+    </dl>
+
+    <p class="note">
+      The first deliverable is the position, not a trade. Most teams cannot answer how many
+      dollars of next quarter’s AI spend are price and how many are volume. That number is
+      computable from telemetry they are already emitting.
+    </p>
+  </section>
+
+  <section id="pipeline" class="section">
+    <h2>From gateway telemetry to a bounded cost line</h2>
+    <p class="sub">
+      Hedgerouter is not a model router. Keep whatever gateway chooses and serves your
+      models; Hedgerouter reads its output and prices the exposure underneath it.
+    </p>
+
+    <ol class="steps">
+      <li>
+        <h3>Ingest</h3>
+        <p>NDJSON exports, JSON access logs, OTLP spans, Claude Code transcripts. Nothing new to instrument, and replaying the same export twice is idempotent.</p>
+      </li>
+      <li>
+        <h3>Normalize</h3>
+        <p>Model, provider, token counts, realized cost, latency, status, failover. The boundary is an allowlist, so prompts, paths, tool arguments and identities are never read in.</p>
+      </li>
+      <li>
+        <h3>Position</h3>
+        <p>A daily ledger in dollars and tokens by model, provider and route, with the price component separated from the volume component.</p>
+      </li>
+      <li>
+        <h3>Price</h3>
+        <p>Public compute indices and listed contracts, quoted at prices you could have transacted at, with fees included. No midpoints nobody could have traded.</p>
+      </li>
+      <li>
+        <h3>Size</h3>
+        <p>A hedge is sized against a stated budget with a per-event cap, and never larger than the exposure it covers. Sizing runs before anything is placed, not after.</p>
+      </li>
+      <li>
+        <h3>Report basis</h3>
+        <p>What fraction of your actual cost line an instrument tracks. Until a real ledger has been compared against a contract, every sizing says basis is not measured, and it never assumes zero.</p>
+      </li>
+    </ol>
+  </section>
+
+  <section id="instruments" class="section">
+    <h2>Where this risk is becoming tradeable</h2>
+    <p class="sub">
+      A hedge is only as good as the instrument under it, so the question is never “is there
+      a contract” but “what does it settle on”.
+    </p>
+
+    <table>
+      <thead>
+        <tr>
+          <th scope="col">Instrument</th>
+          <th scope="col">Settles on</th>
+          <th scope="col">Fit to your cost line</th>
+          <th scope="col">Available</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Compute-price index</td>
+          <td data-label="Settles on">A published spot index for rented accelerator capacity</td>
+          <td data-label="Fit to your cost line">Direct, if you buy capacity on demand</td>
+          <td data-label="Available">Listed</td>
+        </tr>
+        <tr>
+          <td>Compute spot and forward markets</td>
+          <td data-label="Settles on">The traded price of capacity itself</td>
+          <td data-label="Fit to your cost line">Direct, and the first thing here to offer a forward curve</td>
+          <td data-label="Available">Forming</td>
+        </tr>
+        <tr>
+          <td>Provider list-price contract</td>
+          <td data-label="Settles on">A provider’s own published price page</td>
+          <td data-label="Fit to your cost line">Direct, if you pay list; the settlement variable <em>is</em> your cost</td>
+          <td data-label="Available">Listed, annual tenor</td>
+        </tr>
+        <tr>
+          <td>Compute perpetual</td>
+          <td data-label="Settles on">A continuously-funded compute price rather than a dated threshold</td>
+          <td data-label="Fit to your cost line">Potentially the closest fit yet: a cost line is continuous, and a dated binary is not</td>
+          <td data-label="Available">Anticipated, not yet listed</td>
+        </tr>
+        <tr>
+          <td>Blended $/token index</td>
+          <td data-label="Settles on">A volume-weighted blend of published prices across labs</td>
+          <td data-label="Fit to your cost line">Weak. Most of its variance is the market’s model mix changing, not price</td>
+          <td data-label="Available">Listed</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <p class="note">
+      Compute-price indices are the arm we instrument first, because for a team renting
+      capacity they are the exposure itself rather than a proxy for it. A hedge on the wrong
+      variable costs premium and leaves the risk in place, so every sizing states basis, as
+      “not measured” until a real ledger has been compared, rather than assuming it away.
+    </p>
+  </section>
+
+  <section id="example" class="section">
+    <h2>A worked example, and what the order book says</h2>
+    <p class="sub">
+      A synthetic company, not a customer: $15,445 a month on one model at a committed rate of
+      $5 per million input tokens and $30 per million output. The plan below was sized against the
+      live order books of the per-token list-price contracts on 18 October 2026.
+    </p>
+
+    <div class="run">
+      <p class="caption">Synthetic ledger, live order books. Nothing was sent to a venue.</p>
+<pre><code><span class="p">$</span> hedge exposure
+     gpt-5.5   input   <span class="n">49.6</span> MTok/day at <span class="n">$5.00</span>
+               output   <span class="n">9.0</span> MTok/day at <span class="n">$30.00</span>
+
+<span class="p">$</span> hedge hedge-plan --posture locked --horizon-days 90
+     7 limit orders, <span class="n">5,445</span> contracts, premium <span class="n">$606</span>, fees at most <span class="n">$37</span>
+     every order limited by the <span class="n">25%</span> open-interest cap
+     one rung skipped: no bid</code></pre>
+    </div>
+
+    <table class="status">
+      <thead>
+        <tr>
+          <th scope="col">Side</th>
+          <th scope="col">Rungs bought</th>
+          <th scope="col">Full cover</th>
+          <th scope="col">Fillable now</th>
+          <th scope="col">Premium</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Input, $5 committed</td>
+          <td data-label="Rungs bought">$4, $3, $2, $1</td>
+          <td data-label="Full cover">17,836 contracts</td>
+          <td data-label="Fillable now">1,506 (8%)</td>
+          <td data-label="Premium">$229</td>
+        </tr>
+        <tr>
+          <td>Output, $30 committed</td>
+          <td data-label="Rungs bought">$25, $20, $15</td>
+          <td data-label="Full cover">16,108 contracts</td>
+          <td data-label="Fillable now">3,939 (24%)</td>
+          <td data-label="Premium">$377</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <p class="note">
+      The finding is the second column. The listed per-token contracts across all three models
+      carry about 50,000 contracts of open interest in total, so a team spending $15,000 a month
+      can already fill only a fraction of the cover it would want. The instruments are real and
+      priced; the depth is not there yet. That is the reason to measure exposure before sizing
+      anything, and it is the number to watch as these markets grow.
+      <a href="https://github.com/kapilcdave/hedge-router/blob/main/docs/worked-example.md">Reproduce it</a>.
+    </p>
+  </section>
+
+  <section id="status" class="section">
+    <h2>What runs today, and what doesn’t</h2>
+    <p class="sub">
+      Being specific here is cheaper than being caught out later. The measurement half is real
+      and you can run it this afternoon. The order path is built and held shut: what authorises a
+      live order is a research gate that has not opened, and on current data the demand signal is
+      slightly <em>worse</em> than simply carrying the last index price forward.
+    </p>
+
+    <table class="status">
+      <thead>
+        <tr><th scope="col">Capability</th><th scope="col">State</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Ingest from Weave Router exports, JSON access logs, OTLP spans, Claude Code transcripts</td><td>Runs today</td></tr>
+        <tr><td>Metadata-only normalization behind an allowlist boundary</td><td>Runs today</td></tr>
+        <tr><td>Daily exposure ledger in dollars and tokens, by model, provider and route</td><td>Runs today</td></tr>
+        <tr><td>Basis against a real company’s cost line</td><td>Not measured yet; needs a real ledger</td></tr>
+        <tr><td>Hedge sizing against a stated budget and per-event cap</td><td>Runs today, paper</td></tr>
+        <tr><td>Discovery of listed per-token price contracts, matched to the models you use, with netting against held positions</td><td>Runs today, dry run</td></tr>
+        <tr><td>Order path to the venue: signed requests, idempotent order ids, hard notional caps, kill switch</td><td>Built, never armed</td></tr>
+        <tr><td>Any live order, ever</td><td>Zero placed; gate is shut</td></tr>
+        <tr><td>Forward pricing as compute venues list capacity</td><td>In progress</td></tr>
+        <tr><td>Compute perpetuals, if and when a venue lists them</td><td>Not instrumented</td></tr>
+        <tr><td>Model routing, or anything that sits in your request path</td><td>Not built</td></tr>
+        <tr><td>Storage of prompts, completions or any content</td><td>Not built, by design</td></tr>
+      </tbody>
+    </table>
+
+    <p class="note">
+      The order path arms only when all five interlocks agree: a passing out-of-sample gate, an
+      arming phrase in the environment, a trade-scoped venue key, no halt file, and an explicit
+      flag. Anything missing is a dry run that prints the order it would have sent and names the
+      interlock that stopped it. <code>hedge live-status</code> prints that list, and today
+      it prints <code>would_arm: false</code>.
+    </p>
+  </section>
+
+  <section id="privacy" class="section">
+    <h2>Your telemetry never has to leave your infrastructure</h2>
+    <p class="sub">
+      Normalization is an allowlist, not a log archive. The fields below are not filtered
+      after the fact; they are never read into the ledger in the first place.
+    </p>
+
+    <table class="status">
+      <thead>
+        <tr><th scope="col">Field</th><th scope="col">What Hedgerouter does with it</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Prompts and completions</td><td>Never read</td></tr>
+        <tr><td>Code, paths and filenames</td><td>Never read</td></tr>
+        <tr><td>Tool arguments and tool output</td><td>Never read</td></tr>
+        <tr><td>Credentials and API keys</td><td>Never read</td></tr>
+        <tr><td>Email addresses and gateway user IDs</td><td>Never read</td></tr>
+        <tr><td>Session IDs</td><td>Pseudonymized with a rotating local salt</td></tr>
+        <tr><td>Telemetry upload</td><td>Off by default</td></tr>
+        <tr><td>Everything the ledger does hold</td><td>Removable with <code>delete-data --confirm DELETE</code></td></tr>
+      </tbody>
+    </table>
+
+    <p class="note"><a href="https://github.com/kapilcdave/hedge-router#privacy-boundary">Read the boundary spec</a></p>
+  </section>
+
+  <section class="band close">
+    <div>
+      <h2>Measure the exposure first. Then decide what can be capped.</h2>
+      <p>One command against an export you already have. Nothing leaves your machine.</p>
+    </div>
+    <div class="cta-row">
+      <a class="btn btn-primary" href="https://github.com/kapilcdave/hedge-router">Get the CLI</a>
+      <a class="btn btn-ghost" href="mailto:hi@hedgerouter.com">Talk to us</a>
+    </div>
+  </section>
+
+</main>
+
+<footer class="foot">
+  <p><b>Hedgerouter</b> is risk measurement software. It places no trades and is not a broker or an adviser. Nothing here is investment advice.</p>
+  <p class="foot-links">
+    <a href="https://github.com/kapilcdave/hedge-router">GitHub</a>
+    <a href="mailto:hi@hedgerouter.com">Contact</a>
+  </p>
+</footer>
+
+</body>
+</html>
