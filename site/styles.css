@@ -293,6 +293,11 @@ thead th:last-child { width: 15%; white-space: nowrap; }
 
 td:last-child { color: var(--ink-2); }
 .status td:last-child { white-space: nowrap; }
+
+/* record table: the last column is prose, not a short state */
+.prose-table thead th:first-child { width: 34%; }
+.prose-table thead th:last-child { width: auto; white-space: normal; }
+.prose-table td:last-child { white-space: normal; }
 .status td code { white-space: nowrap; }
 
 /* ---------- close ---------- */

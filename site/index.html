@@ -34,7 +34,10 @@
     <a href="#exposure">The exposure</a>
     <a href="#pipeline">How it works</a>
     <a href="#instruments">Instruments</a>
+    <a href="#macro">Token prices</a>
     <a href="#example">Worked example</a>
+    <a href="#orders">Orders</a>
+    <a href="#record">Record</a>
     <a href="#status">What runs today</a>
     <a href="https://github.com/kapilcdave/hedgerouter">GitHub</a>
   </nav>
@@ -48,6 +51,9 @@
     <p class="lede">
       Point it at your gateway logs. It returns your AI spend as a dollar position, split
       into price and usage, then finds the listed contracts that settle on those prices and sizes a hedge against their real order books.
+    </p>
+    <p class="lede">
+      Read the result as a macro position on the level of token prices, not a bet on your own usage.
     </p>
     <div class="cta-row">
       <a class="btn btn-primary" href="https://github.com/kapilcdave/hedgerouter">Measure your exposure</a>
@@ -204,6 +210,84 @@
     </p>
   </section>
 
+  <section id="macro" class="section">
+    <h2>Token prices as a macro position</h2>
+    <p class="sub">
+      Take volume out and an AI bill is a position on the level of list prices: one number per
+      model per direction, set by the provider and repriced in steps. Kalshi lists that level as
+      a ladder of yes/no contracts, so what the market charges for protection can be read straight
+      off its books. Below are the live quotes on 19 October 2026 for every open per-token
+      list-price ladder. Each contract pays $1 if the provider’s published price is at or below
+      the strike in 2026.
+    </p>
+
+    <table>
+      <thead>
+        <tr>
+          <th scope="col">Model, side</th>
+          <th scope="col">Rungs: strike, YES bid / ask in cents</th>
+          <th scope="col">Open interest</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>GPT 5.5, input per MTok</td>
+          <td data-label="Rungs">$1 2/8 · $2 8/13 · $3 15/19 · $4 25/28</td>
+          <td data-label="Open interest">6,128</td>
+        </tr>
+        <tr>
+          <td>GPT 5.5, output per MTok</td>
+          <td data-label="Rungs">$10 –/3 · $15 1/3 · $20 7/8 · $25 7/11</td>
+          <td data-label="Open interest">18,848</td>
+        </tr>
+        <tr>
+          <td>Claude Opus 4.8, input per MTok</td>
+          <td data-label="Rungs">$1 2/5 · $2 3/8 · $3 14/19 · $4 28/32</td>
+          <td data-label="Open interest">6,976</td>
+        </tr>
+        <tr>
+          <td>Claude Opus 4.8, output per MTok</td>
+          <td data-label="Rungs">$5 –/3 · $10 5/8 · $15 2/9 · $20 3/7</td>
+          <td data-label="Open interest">8,413</td>
+        </tr>
+        <tr>
+          <td>Gemini 3.5 Flash, input per MTok</td>
+          <td data-label="Rungs">$0.50 –/4 · $0.75 2/8 · $1.00 12/19 · $1.25 22/25</td>
+          <td data-label="Open interest">2,469</td>
+        </tr>
+        <tr>
+          <td>Gemini 3.5 Flash, output per MTok</td>
+          <td data-label="Rungs">$5 1/5 · $6 1/5 · $7 –/5 · $8 1/5</td>
+          <td data-label="Open interest">7,162</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <dl class="facts">
+      <div>
+        <dt>Locked rate: a price cut strands you</dt>
+        <dd>If you committed to a rate and the provider cuts list, you keep paying the old price. The cover is YES on every rung below your rate, sized so the payout at each strike equals the loss there. On a $30 output rate the $25 rung asks 11¢ for $1 of cover.</dd>
+      </div>
+      <div>
+        <dt>Floating rate: a rise has no listed cover</dt>
+        <dd>If you pay list and fear a rise, the planner buys NO on rungs above your price. Every listed rung for the GPT 5.5 example sits below its rates, so <code>hedge-plan --posture floating</code> returns zero legs. The market protects against cuts today and not against rises.</dd>
+      </div>
+      <div>
+        <dt>The whole market is small</dt>
+        <dd>About 50,000 contracts of open interest across all three models, which is at most $50,000 of payout. At the planner’s 25% cap per rung that is about $12,500 of cover, for every company at once. Depth, not price, is what limits a macro hedge here.</dd>
+      </div>
+      <div>
+        <dt>This is a level, not a forecast</dt>
+        <dd>Hedgerouter does not predict where prices go. It sizes cover against the price you are exposed to and states what it costs. Our own demand-based forecast failed its test, and the <a href="#record">record</a> says so.</dd>
+      </div>
+    </dl>
+
+    <p class="note">
+      Quotes are a snapshot from the public order books and move. A dash means no bid.
+      Re-run them with <code>hedge discover</code>.
+    </p>
+  </section>
+
   <section id="example" class="section">
     <h2>A worked example, and what the order book says</h2>
     <p class="sub">
@@ -262,6 +346,104 @@
     </p>
   </section>
 
+  <section id="orders" class="section">
+    <h2>What happens to an order</h2>
+    <p class="sub">
+      A plan becomes real limit orders, each built as the exact request the venue would receive,
+      then passes caps and interlocks before anything can be sent. Everything below ran on
+      19 October 2026, on the synthetic ledger against live books. Unarmed, the code never opens a
+      socket to a mutating endpoint, so no order reached a venue.
+    </p>
+
+    <ol class="steps">
+      <li>
+        <h3>Quote</h3>
+        <p>One order per rung, joined one tick inside the best bid and never at or through the ask. A one-sided book is skipped: today the $10 GPT 5.5 output rung has no bid.</p>
+      </li>
+      <li>
+        <h3>Cap</h3>
+        <p>The limits live inside the executor, not the CLI. Defaults: 10 contracts and $2 per order, 5 orders and $10 per run, a $25 minimum balance, nothing resting within 15 minutes of close.</p>
+      </li>
+      <li>
+        <h3>Interlock</h3>
+        <p>Five must agree: a passing out-of-sample gate, an arming phrase, a trade-scoped key, no halt file, and an explicit <code>--live</code>. A missing one is named, not guessed.</p>
+      </li>
+      <li>
+        <h3>Journal</h3>
+        <p>Every attempt, dry or live, is appended to a journal before it is sent. The client order id comes from market, side and observation time, so replaying a cycle after a timeout cannot double a position.</p>
+      </li>
+      <li>
+        <h3>Send</h3>
+        <p>A signed request to the venue’s current create endpoint, post-only, cancelled if the venue pauses. Buying NO is an ask on the YES price, a detail that is easy to invert.</p>
+      </li>
+    </ol>
+
+    <div class="run">
+      <p class="caption">Default caps, condensed from the JSON output. Nothing was sent.</p>
+<pre><code><span class="p">$</span> hedge hedge-open --posture locked --horizon-days 90
+     mode <span class="n">dry-run</span>, <span class="n">0</span> orders built, <span class="n">7</span> refused
+     KXGPT55Y-27-NA-4   cap-contracts: 626 exceeds maxContractsPerOrder 10
+     KXGBT55OY-27-NA-20 cap-contracts: 1528 exceeds maxContractsPerOrder 10
+     ...
+     blockers: gate-closed, not-confirmed, missing-credentials</code></pre>
+    </div>
+
+    <div class="run">
+      <p class="caption">Caps raised for the dry run. The first of 7 journalled requests, verbatim.</p>
+<pre><code><span class="p">$</span> hedge hedge-open --posture locked --horizon-days 90 \
+    --max-contracts 2000 --max-orders 10 --max-notional 200 --max-notional-run 600
+{
+  "ticker": "KXGPT55Y-27-NA-4",
+  "side": "bid",
+  "count": "626",
+  "price": 0.26,
+  "time_in_force": "good_till_canceled",
+  "self_trade_prevention_type": "taker_at_cross",
+  "post_only": true,
+  "cancel_order_on_pause": true,
+  "client_order_id": "hedgerouter-d514db111edcb24da27dc8ec"
+}</code></pre>
+    </div>
+
+    <p class="note">
+      The finding is that the defaults refuse the whole hedge. They are sized so that the worst
+      credible outcome of a first live run costs under ten dollars: that run tests the wire, not
+      the thesis. With caps raised the same plan builds 7 post-only bids, 5,414 contracts and
+      $463 of premium, and still sends nothing. Moving past ten contracts is a decision for after
+      a real ledger gives a basis number. The executor has 18 tests; an armed send is exercised
+      only against a recording transport, never the live venue.
+    </p>
+  </section>
+
+  <section id="record" class="section">
+    <h2>The research record, including what failed</h2>
+    <p class="sub">
+      Most of the work so far was deciding what not to trade. These are the results, the negative
+      ones included, and the order path stays shut because of them.
+    </p>
+
+    <table class="status prose-table">
+      <thead>
+        <tr><th scope="col">Work</th><th scope="col">Result</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Settlement sources audited against public endpoints</td><td>The index-settled token ladders rebuild exactly from a public endpoint, 8 of 8 with no exceptions. The model-author share markets settle on requests, not tokens, whatever their rules text says.</td></tr>
+        <tr><td>List-price contracts compared with index contracts</td><td>An index is a proxy and carries basis risk. A list-price contract settles on the provider’s own price page, so for a company paying list it removes most of the chain.</td></tr>
+        <tr><td>Walk-forward backtest against the Ornn H100 index (102 settled markets, 10 independent events)</td><td>Hypothesis not supported. Where the demand model trains, it is slightly worse than carrying the last index price forward: lift −0.0012 at one day, −0.0022 at three.</td></tr>
+        <tr><td>Research gate for live orders</td><td>Needs 30 independent events, a 5% Brier lift over both baselines and positive paper P&amp;L. At one event a week it cannot be evaluated before about March 2027, and it is shut.</td></tr>
+        <tr><td>Paper orders, settlement and a resumable pilot</td><td>Immutable pre-close paper orders, settled to P&amp;L, with a weekly falsification scorecard.</td></tr>
+        <tr><td>Open-weights availability ledger</td><td>A daily snapshot of Hugging Face gated and licence state. On day one, 3 of 12 watched models were already gated, so the history can only be owned by starting to record it.</td></tr>
+        <tr><td>Venue map</td><td><code>hedge venues</code> lists what blocks each one. Nothing is tradable now. CME GPU rental-index futures have contract terms and a sizing command, and need a futures broker.</td></tr>
+        <tr><td>Depth of the list-price markets</td><td>About 50,000 contracts across all open ladders. A company spending $15,000 a month can fill 8% to 24% of full cover.</td></tr>
+      </tbody>
+    </table>
+
+    <p class="note">
+      152 tests pass and the CLI has no runtime dependencies.
+      <a href="https://github.com/kapilcdave/hedgerouter/tree/main/cli/docs">Read the write-ups</a>.
+    </p>
+  </section>
+
   <section id="status" class="section">
     <h2>What runs today, and what doesn’t</h2>
     <p class="sub">
@@ -282,6 +464,10 @@
         <tr><td>Basis against a real company’s cost line</td><td>Not measured yet; needs a real ledger</td></tr>
         <tr><td>Hedge sizing against a stated budget and per-event cap</td><td>Runs today, paper</td></tr>
         <tr><td>Discovery of listed per-token price contracts, matched to the models you use, with netting against held positions</td><td>Runs today, dry run</td></tr>
+        <tr><td>Order construction: post-only limit requests, deterministic order ids, per-order and per-run caps, append-only journal, in dry run</td><td>Runs today, dry run</td></tr>
+        <tr><td>Walk-forward backtest, paper settlement and falsification scorecard</td><td>Runs today; the demand signal does not beat persistence</td></tr>
+        <tr><td>Open-weights availability and author-share ledgers</td><td>Runs today, one snapshot per run</td></tr>
+        <tr><td>CME compute futures: contract terms and sizing</td><td>Sizing only; needs a futures broker</td></tr>
         <tr><td>Order path to the venue: signed requests, idempotent order ids, hard notional caps, kill switch</td><td>Built, never armed</td></tr>
         <tr><td>Any live order, ever</td><td>Zero placed; gate is shut</td></tr>
         <tr><td>Forward pricing as compute venues list capacity</td><td>In progress</td></tr>
