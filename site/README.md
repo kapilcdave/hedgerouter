@@ -23,14 +23,24 @@ python3 -m http.server 4321
 # http://localhost:4321
 ```
 
-## Deploy to Vercel
+## Deploy
 
-Project: `kapilcdaves-projects/hedgerouter` → https://hedgerouter.vercel.app
+The canonical host is **https://hedgerouter.com**. It is a Vercel project
+(`kapilcdaves-projects/hedgerouter`) behind a Cloudflare proxy, with `www` redirected to the
+apex in `vercel.json`. https://hedgerouter.vercel.app is the deployment alias, not the URL to
+share; canonical and `og:` tags point at the apex.
 
 Framework preset: **Other**. No build command, no output directory. The project's Root
 Directory is `site`, so that directory is served as-is.
 
-Pushing to `main` deploys to production; any other branch gets a preview URL.
+Pushing to `main` deploys to production; any other branch gets a preview URL. The build shows
+up on hedgerouter.com within about a minute — Cloudflare caches HTML as
+`must-revalidate`, so it does not need purging.
+
+Cloudflare's **Email Address Obfuscation** is on, which rewrites `mailto:` links in the served
+HTML to `/cdn-cgi/l/email-protection#…` and decodes them with a script. That is why the
+contact link looks encoded in `curl` output but still works in a browser. Turn it off in
+Cloudflare → Scrape Shield if the raw HTML needs to carry a usable `mailto:`.
 Manual deploys, if the Git integration is ever down:
 
 ```sh
