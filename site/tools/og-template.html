@@ -1,22 +1,72 @@
 <!doctype html><html><head><meta charset="utf-8">
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box}
-body{margin:0;width:1200px;height:630px;background:#f6f7f5;color:#16181b;
-  font-family:"IBM Plex Sans",sans-serif;padding:64px 72px;
-  display:flex;flex-direction:column;justify-content:space-between}
-.top{display:flex;align-items:center;gap:12px;padding-bottom:22px;border-bottom:1px solid #d2d5cf}
-.mk{width:44px;height:26px;background:currentColor;-webkit-mask:url(/assets/mark.svg) center/contain no-repeat}
-.wd{font-weight:600;font-size:27px}
-h1{margin:0;font-size:66px;line-height:1.03;letter-spacing:-.024em;font-weight:600;max-width:21ch}
-.rows{font-size:19px;color:#5a6067;border-top:1px solid #d2d5cf}
-.rows div{display:grid;grid-template-columns:230px 1fr;gap:16px;padding:9px 0;border-bottom:1px solid #d2d5cf}
-.rows b{font-weight:400;font-family:"IBM Plex Mono",monospace;font-size:17px}
+body{margin:0;width:1200px;height:630px;background:#f6f4ee;color:#111513;
+  font-family:"IBM Plex Sans",sans-serif;padding:44px 56px 36px;
+  display:flex;flex-direction:column;justify-content:space-between;overflow:hidden}
+.top{display:flex;align-items:center;justify-content:space-between;gap:24px;
+  padding-bottom:16px;border-bottom:1px solid #ddd8cc}
+.brand{display:flex;align-items:center;gap:10px}
+.mk{width:34px;height:21px;background:currentColor;-webkit-mask:url(/assets/mark.svg) center/contain no-repeat}
+.wd{font-weight:600;font-size:20px;letter-spacing:-.01em}
+.kick{font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.13em;
+  text-transform:uppercase;color:#175a46}
+.mid{display:grid;grid-template-columns:minmax(0,1fr) 382px;gap:52px;align-items:center;
+  padding:34px 0 28px}
+h1{margin:0;font-family:"Instrument Serif",Georgia,serif;font-weight:400;font-size:76px;
+  line-height:.95;letter-spacing:-.028em}
+h1 em{font-style:italic}
+.lede{margin-top:22px;font-size:16.5px;line-height:1.5;color:#636863;max-width:37ch}
+.pos{border-top:1px solid #111513;padding-top:14px}
+.ph{display:flex;justify-content:space-between;padding-bottom:10px;
+  border-bottom:1px solid #ddd8cc;font-family:"IBM Plex Mono",monospace;
+  font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:#636863}
+.pt{display:flex;align-items:flex-end;justify-content:space-between;margin:16px 0 12px}
+.pt span:first-child{font-family:"IBM Plex Mono",monospace;font-size:9px;letter-spacing:.1em;
+  text-transform:uppercase;color:#636863}
+.pt span:last-child{font-family:"IBM Plex Mono",monospace;font-size:36px;line-height:.9;letter-spacing:-.04em}
+.pr{border-top:1px solid #ddd8cc;border-bottom:1px solid #ddd8cc}
+.pr div{display:grid;grid-template-columns:46px 1fr auto;gap:10px;padding:6px 0;
+  font-family:"IBM Plex Mono",monospace;font-size:10px;color:#636863}
+.pr div span:last-child{color:#111513}
+.pc{margin-top:14px}
+.pct{display:flex;justify-content:space-between;font-size:8.5px;color:#636863;margin-bottom:5px}
+.pct span:last-child{font-family:"IBM Plex Mono",monospace;color:#111513}
+.bar{height:4px;background:#eae7de}
+.bar i{display:block;height:100%;background:#175a46}
+.bar + .pct{margin-top:11px}
+.foot{display:flex;justify-content:space-between;gap:24px;border-top:1px solid #111513;
+  padding-top:12px;font-family:"IBM Plex Mono",monospace;font-size:9.5px;letter-spacing:.06em;
+  text-transform:uppercase;color:#636863}
+.foot span:last-child{color:#175a46}
 </style></head><body>
-<div class="top"><div class="mk"></div><div class="wd">hedgerouter</div></div>
-<h1>Your AI bill is a commodity position.</h1>
-<div class="rows">
-  <div><b>exposure</b><span>your AI spend, in dollars, by model and provider</span></div>
-  <div><b>basis</b><span>how much of that cost line an instrument actually tracks</span></div>
+<div class="top">
+  <div class="brand"><div class="mk"></div><div class="wd">hedgerouter</div></div>
+  <div class="kick">The hedging layer for enterprise AI</div>
+</div>
+<div class="mid">
+  <div>
+    <h1>Your AI bill is a <br><em>commodity position.</em></h1>
+    <p class="lede">Price the spend in your gateway logs in dollars, then size a hedge against the listed contracts that track it.</p>
+  </div>
+  <div class="pos">
+    <div class="ph"><span>Synthetic position</span><span>30 days</span></div>
+    <div class="pt"><span>AI spend</span><span>$15,445</span></div>
+    <div class="pr">
+      <div><span>Input</span><span>49.6 MTok/day</span><span>@ $5.00</span></div>
+      <div><span>Output</span><span>9.0 MTok/day</span><span>@ $30.00</span></div>
+    </div>
+    <div class="pc">
+      <div class="pct"><span>Input cover fillable now</span><span>8%</span></div>
+      <div class="bar"><i style="width:8%"></i></div>
+      <div class="pct"><span>Output cover fillable now</span><span>24%</span></div>
+      <div class="bar"><i style="width:24%"></i></div>
+    </div>
+  </div>
+</div>
+<div class="foot">
+  <span>Self-hosted, metadata only, MIT, paper only</span>
+  <span>0 live orders placed</span>
 </div>
 </body></html>

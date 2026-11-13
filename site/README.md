@@ -1,7 +1,7 @@
 # Hedgerouter landing page
 
-This is `site/` in the hedgerouter monorepo (the CLI is in `cli/`). Static one-page site for Hedgerouter. No framework, no build step — `index.html`,
-`styles.css` and `assets/`.
+This is `site/` in the hedgerouter monorepo (the CLI is in `cli/`). Static one-page site for
+Hedgerouter. No framework, no build step — `index.html`, `styles.css` and `assets/`.
 
 ```
 index.html              the page
@@ -62,50 +62,58 @@ python3 -m http.server 4321 &
 
 ## Design rules
 
-The page is styled as a risk memo, not a landing page. The principle: **nothing
-here is decoration — every rule, number and label carries information.** These
-are deliberate constraints, so don't relax them by accident:
+The page is a position statement, not a landing page. Structure comes from rules, data and
+diagrams; prose is the fallback, not the default.
 
-- **Palette is six values**, all in `:root`: paper, paper-2, ink, ink-2, rule,
-  signal. `--signal` is for interactive things only; it is not an accent to
-  sprinkle. No third colour, no gradients, no shadows anywhere.
-- **Two type roles.** IBM Plex Sans for everything read as language; IBM Plex
-  Mono only inside the CLI block and for figures. Mono is never a label font.
-- **No cards.** Structure comes from hairline rules and real tables. `border-radius`
-  exists on buttons (2px) and nowhere else.
-- **Tables where content is tabular** — instruments, status, the privacy
-  allowlist. Below 620px they restack, and the four-column table carries its own
-  column labels via `data-label`.
-- **Numbered markers only for real sequences.** The pipeline is numbered because
-  it is one; the four exposure facts are simultaneous, so they are a ruled
-  definition list instead.
+- **Type roles.** Instrument Serif is the display face for `h1` and `h2` only. IBM Plex Sans
+  is for anything read as language. IBM Plex Mono is for figures, labels, captions and
+  commands. Mono labels are deliberate; do not use it for paragraphs.
+- **Palette.** Paper, ink, rule and signal live in `:root`. `--signal` is a deep green used
+  for the measurement accent and positive state. There are no dark bands, no gradients, no
+  shadows and no third decorative colour. Buttons are the only filled controls.
+- **Diagrams are content.** The hero position readout, the four-step flow, the order rail,
+  the ladder, the cover-fill bars and the findings row all encode real values from the CLI
+  or its published snapshot. If a number changes, regenerate the diagram and the copy
+  together. A diagram with invented data is worse than no diagram.
+- **No cards.** The position readout and the ladder are ruled sections, not panels. Everything
+  else is a hairline rule, a real table or a list. Radius lives on controls (2px) and nowhere
+  else.
+- **Numbered markers only for real sequences.** The four-step flow and the order path are
+  sequences and are numbered. The status columns are not.
+- **Tables where content is tabular.** Instruments are a table. Status is a checklist, not a
+  table, because each line is a state rather than a value. Below 640px the instrument table
+  restacks and cells with `data-label` carry their own labels.
 - **No motion.** No scroll reveals, no hover transitions.
-- Avoid the generic-AI-page tells this was rewritten to remove: eyebrow pills with
-  status dots, one word coloured inside a headline, `A · B · C` middle-dot meta
-  strings, spaced em-dash labels, tracked ALL-CAPS mono headings, and uniform
-  radius plus soft shadow on every block.
+- Avoid the generic-AI-page tells this was rewritten to remove: eyebrow pills with status
+  dots, one word coloured inside a headline, `A · B · C` middle-dot meta strings, spaced
+  em-dash labels, tracked ALL-CAPS headings everywhere, and uniform radius plus soft shadow
+  on every block. The italic in the headline is the only display move.
 
 ## Copy
 
-The page sells the measurement half, because that is the half that exists. Two
-rules when editing:
+The page sells the measurement half, because that is the half that exists. Three rules when
+editing:
 
-1. **Don't overstate what runs.** The "What runs today, and what doesn't" section
-   is the contract — ingest, the metadata-only boundary, the dollar/token exposure
-   ledger, basis reporting and paper hedge sizing are shipped; the order path is
-   built but has never been armed; forward pricing is in progress; compute
-   perpetuals, routing and content storage are not instrumented or not built.
-   If a claim elsewhere on the page outruns that section, the claim is wrong.
+1. **Keep it short.** One claim per block. Two sentences is the ceiling for a paragraph;
+   if a diagram can carry the point, delete the paragraph. Do not explain the same claim in
+   the section header, the lede and the note.
+2. **Don't overstate what runs.** The "What runs, what doesn't" section is the contract —
+   ingest, the metadata-only boundary, the dollar/token exposure ledger, basis reporting that
+   says "not measured" until a real ledger exists, and paper hedge sizing are shipped; the
+   order path is built but has never been armed; forward pricing is in progress; compute
+   perpetuals, routing and content storage are not instrumented or not built. If a claim
+   elsewhere on the page outruns that section, the claim is wrong.
 
-   The order path being built is **not** a hedging claim. `hedge
-   live-status` prints `would_arm: false`, and the research gate that would
-   authorise an order has not opened — on current data the demand signal scores
-   slightly worse than carrying the last index price forward. The page must never
-   imply a hedge executes. "Built, never armed" and "Zero placed; gate is shut"
-   are the strongest honest statements, and they are stronger than "not built".
-2. **The terminal block is a condensed run on the synthetic ledger** in the
-   CLI (`cli/examples/synthetic-gateway-month.mjs`), not a customer's.
-   Only show commands that exist. There is no `hedge basis`; basis is not measured.
+   The order path being built is **not** a hedging claim. `hedge live-status` prints
+   `would_arm: false`, and the research gate that would authorise an order has not opened —
+   on current data the demand signal scores slightly worse than carrying the last index price
+   forward. The page must never imply a hedge executes. "Built, never armed" and "Zero
+   placed; gate is shut" are the strongest honest statements, and they are stronger than
+   "not built".
+3. **Only show commands that exist.** The flow names `hedge ingest`, `hedge exposure`,
+   `hedge discover` and `hedge hedge-plan`; the order rail names `hedge live-status`. There
+   is no `hedge basis`; basis is not measured. The worked example runs on the synthetic
+   ledger (`cli/examples/synthetic-gateway-month.mjs`), not a customer's.
 
 Contact address: `hi@hedgerouter.com` (Email Routing forward, not a mailbox) — it appears in
 the close CTA and the footer.
