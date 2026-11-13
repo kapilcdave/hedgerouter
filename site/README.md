@@ -69,6 +69,9 @@ diagrams; prose is the fallback, not the default.
   face at 600 weight, tighter tracking and larger size, not a second typeface. IBM Plex Mono
   is for figures, labels, captions and commands. Mono labels are deliberate; do not use it
   for paragraphs.
+- **Size floor.** Body copy is 17px and no reading text is below 14.5px. Mono labels sit at
+  11–13px; anything smaller reads as texture rather than information. If a label needs to be
+  10px to fit, cut the label instead.
 - **Palette.** Paper, ink, rule and signal live in `:root`. `--signal` is a deep green used
   for the measurement accent and positive state. There are no dark bands, no gradients, no
   shadows and no third decorative colour. Buttons are the only filled controls.
@@ -76,11 +79,13 @@ diagrams; prose is the fallback, not the default.
   the ladder, the cover-fill bars and the findings row all encode real values from the CLI
   or its published snapshot. If a number changes, regenerate the diagram and the copy
   together. A diagram with invented data is worse than no diagram.
-- **No cards.** The position readout and the ladder are ruled sections, not panels. Everything
-  else is a hairline rule, a real table or a list. Radius lives on controls (2px) and nowhere
-  else.
-- **Numbered markers only for real sequences.** The four-step flow and the order path are
-  sequences and are numbered. The status columns are not.
+- **No cards and few labels.** The position readout and the ladder are ruled sections, not
+  panels. Everything else is a hairline rule, a real table or a list. Radius lives on controls
+  (2px) and nowhere else. Claims that are already in the footer or the privacy band do not
+  get repeated as a tag row in the hero.
+- **Numbered markers only for real sequences.** The four-step flow is numbered because the
+  steps run in order. Nothing else is. Sections have no eyebrows or index numbers; the `h2`
+  names them.
 - **Tables where content is tabular.** Instruments are a table. Status is a checklist, not a
   table, because each line is a state rather than a value. Below 640px the instrument table
   restacks and cells with `data-label` carry their own labels.

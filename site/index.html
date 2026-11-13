@@ -53,9 +53,6 @@
         <a class="btn btn-primary" href="https://github.com/kapilcdave/hedgerouter">Measure your exposure</a>
         <a class="btn btn-ghost" href="#how">See how it works</a>
       </div>
-      <p class="micro">
-        <span>Self-hosted</span><span>Metadata only</span><span>MIT</span><span>Paper only</span>
-      </p>
     </div>
 
     <aside class="position" aria-label="Synthetic exposure statement">
@@ -85,7 +82,6 @@
   <section id="how" class="section">
     <header class="sec-head">
       <div>
-        <p class="index">01 / How it works</p>
         <h2>From logs to a sized hedge</h2>
       </div>
       <p class="sub">Four steps. None of them sits in your request path.</p>
@@ -124,10 +120,10 @@
         <span class="badge">Built · never armed</span>
       </div>
       <div class="gates">
-        <div class="gate"><span class="gate-label">Quote</span><span class="gate-copy">Inside the best bid</span></div>
-        <div class="gate"><span class="gate-label">Cap</span><span class="gate-copy">10 contracts, $2 per order. $10 per run.</span></div>
+        <div class="gate"><span class="gate-label">Quote</span><span class="gate-copy">Inside best bid</span></div>
+        <div class="gate"><span class="gate-label">Cap</span><span class="gate-copy">$2 per order, $10 per run</span></div>
         <div class="gate"><span class="gate-label">Interlock</span><span class="gate-copy">Five must agree</span></div>
-        <div class="gate"><span class="gate-label">Journal</span><span class="gate-copy">Written before send</span></div>
+        <div class="gate"><span class="gate-label">Journal</span><span class="gate-copy">Before send</span></div>
         <div class="gate"><span class="gate-label">Send</span><span class="gate-copy">Post-only</span></div>
       </div>
       <p class="order-status">
@@ -142,7 +138,6 @@
   <section id="instruments" class="section">
     <header class="sec-head">
       <div>
-        <p class="index">02 / Instruments</p>
         <h2>The instruments exist. The depth doesn’t.</h2>
       </div>
       <p class="sub">A hedge is only as good as what it settles on.</p>
@@ -216,7 +211,6 @@
   <section class="section" id="example">
     <header class="sec-head">
       <div>
-        <p class="index">03 / Worked example</p>
         <h2>What $15,445 a month can cover</h2>
       </div>
       <p class="sub">Synthetic ledger, live order books, 18 October 2026.</p>
@@ -251,7 +245,6 @@
   <section class="section" id="status">
     <header class="sec-head">
       <div>
-        <p class="index">04 / Status</p>
         <h2>What runs, what doesn’t</h2>
       </div>
       <p class="sub">The measurement half is real. The order path is held shut.</p>
@@ -265,23 +258,20 @@
           <li class="yes">Metadata-only allowlist</li>
           <li class="yes">Daily dollar and token ledger</li>
           <li class="yes">Paper hedge sizing</li>
-          <li class="yes">Contract discovery and netting, dry run</li>
-          <li class="yes">Order construction, dry run</li>
-          <li class="yes">Backtest, paper settlement, falsification scorecard</li>
-          <li class="yes">Open-weights availability ledgers</li>
+          <li class="yes">Contract discovery and order construction, dry run</li>
+          <li class="yes">Backtest, paper settlement, scorecard</li>
           <li class="yes">CME compute futures: sizing only, needs a broker</li>
         </ul>
       </div>
       <div class="status-col">
         <h3>Not yet</h3>
         <ul>
-          <li class="no">Basis against a real cost line — needs a real ledger</li>
-          <li class="no">Order path armed — built, never armed</li>
-          <li class="no">Any live order, ever — zero placed</li>
-          <li class="no">Forward pricing — in progress</li>
-          <li class="no">Compute perpetuals — not listed</li>
-          <li class="no">Model routing — not built</li>
-          <li class="no">Storage of prompts or completions — not built by design</li>
+          <li class="no">Basis: not measured, needs a real ledger</li>
+          <li class="no">Order path: built, never armed</li>
+          <li class="no">Live orders: zero placed</li>
+          <li class="no">Forward pricing: in progress</li>
+          <li class="no">Compute perpetuals: not listed</li>
+          <li class="no">Model routing and content storage: not built</li>
         </ul>
       </div>
     </div>
