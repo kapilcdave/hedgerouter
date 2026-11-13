@@ -65,9 +65,10 @@ python3 -m http.server 4321 &
 The page is a position statement, not a landing page. Structure comes from rules, data and
 diagrams; prose is the fallback, not the default.
 
-- **Type roles.** Instrument Serif is the display face for `h1` and `h2` only. IBM Plex Sans
-  is for anything read as language. IBM Plex Mono is for figures, labels, captions and
-  commands. Mono labels are deliberate; do not use it for paragraphs.
+- **Type roles.** IBM Plex Sans carries both language and display: `h1` and `h2` are the same
+  face at 600 weight, tighter tracking and larger size, not a second typeface. IBM Plex Mono
+  is for figures, labels, captions and commands. Mono labels are deliberate; do not use it
+  for paragraphs.
 - **Palette.** Paper, ink, rule and signal live in `:root`. `--signal` is a deep green used
   for the measurement accent and positive state. There are no dark bands, no gradients, no
   shadows and no third decorative colour. Buttons are the only filled controls.
@@ -87,7 +88,7 @@ diagrams; prose is the fallback, not the default.
 - Avoid the generic-AI-page tells this was rewritten to remove: eyebrow pills with status
   dots, one word coloured inside a headline, `A · B · C` middle-dot meta strings, spaced
   em-dash labels, tracked ALL-CAPS headings everywhere, and uniform radius plus soft shadow
-  on every block. The italic in the headline is the only display move.
+  on every block. Size and weight are the only display moves.
 
 ## Copy
 
